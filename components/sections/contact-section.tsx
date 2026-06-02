@@ -384,7 +384,7 @@ export function ContactSection() {
     return () => window.removeEventListener("message", onMsg)
   }, [form.email, form.firstName, form.lastName])
 
-  const col2 = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" } as const
+  const col2 = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" } as const
 
   return (
     <section
@@ -454,7 +454,7 @@ export function ContactSection() {
         ref={scrollRef}
         className="flex-1 overflow-y-auto"
         style={{
-          padding: "88px 52px 200px 28px",
+          padding: "0 0 120px 0",
           display: "flex",
           flexDirection: "column",
           gap: "12px",
@@ -464,6 +464,30 @@ export function ContactSection() {
           opacity: isVisible ? 1 : 0,
         } as React.CSSProperties}
       >
+
+        {/* ── Mobile header — visible when left panel is hidden ── */}
+        <div className="block lg:hidden px-6 pt-10 pb-6" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: "0.18em", color: "rgba(255,255,255,0.3)", textTransform: "uppercase", marginBottom: "16px" }}>
+            / Consultation
+          </p>
+          <h2 style={{ fontFamily: "var(--font-sans)", fontSize: "clamp(1.8rem,7vw,2.8rem)", fontWeight: 300, lineHeight: 1.08, letterSpacing: "-0.03em", color: "rgba(255,255,255,0.93)", marginBottom: "20px" }}>
+            Schedule a<br />consultation
+          </h2>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <a href="mailto:contact@soladvisers.com" style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "rgba(255,255,255,0.45)", letterSpacing: "0.04em" }}>
+              contact@soladvisers.com
+            </a>
+            <a href="tel:7739166024" style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "rgba(255,255,255,0.45)", letterSpacing: "0.04em" }}>
+              (773) 916-6024
+            </a>
+            <span style={{ fontFamily: "var(--font-mono)", fontSize: "11px", color: "rgba(255,255,255,0.35)", letterSpacing: "0.04em" }}>
+              360 Central Ave, St. Petersburg FL
+            </span>
+          </div>
+        </div>
+
+        {/* Form content wrapper — adds horizontal padding */}
+        <div className="px-5 lg:px-12" style={{ display: "flex", flexDirection: "column", gap: "12px", paddingTop: "24px" }}>
 
         {/* 01 — Personal Information */}
         <Section num="01" title="Personal Information">
@@ -600,6 +624,7 @@ export function ContactSection() {
         </Section>
 
         <div style={{ height: "12px" }} />
+        </div> {/* end form content wrapper */}
       </div>
     </section>
   )

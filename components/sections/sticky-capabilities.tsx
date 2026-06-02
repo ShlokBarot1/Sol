@@ -91,11 +91,11 @@ function ServiceCard({ num, words, asset, tag, imgPos, onClick }: ServiceCardPro
       {/* title stack — bottom-left */}
       <div className="absolute bottom-16 left-8 z-20">
         <p className="font-sans font-black leading-none text-white"
-          style={{ fontSize: "clamp(3rem, 7vw, 6.5rem)", letterSpacing: "-0.05em", lineHeight: 0.85 }}>
+          style={{ fontSize: "clamp(2rem, 7vw, 6.5rem)", letterSpacing: "-0.05em", lineHeight: 0.85 }}>
           {words[0]}
         </p>
         <p className="font-sans font-extralight leading-none text-white/55"
-          style={{ fontSize: "clamp(3rem, 7vw, 6.5rem)", letterSpacing: "-0.05em", lineHeight: 0.85 }}>
+          style={{ fontSize: "clamp(2rem, 7vw, 6.5rem)", letterSpacing: "-0.05em", lineHeight: 0.85 }}>
           {words[1]}
         </p>
       </div>
@@ -169,7 +169,7 @@ export function StickyCapabilities({ scroller, onCardClick }: StickyCapabilities
         <div className="relative z-20 mx-auto w-full max-w-7xl flex items-end justify-between pb-6 pt-12">
           <div>
             <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-primary/80">/ What We Do</p>
-            <h2 className="font-sans text-5xl font-light tracking-tight text-foreground md:text-6xl">
+            <h2 className="font-sans text-3xl font-light tracking-tight text-foreground md:text-5xl lg:text-6xl">
               Capabilities built for
               <br />
               <span className="text-foreground/35">digital-first growth</span>

@@ -56,6 +56,7 @@ export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [showShader, setShowShader] = useState(false)
   const [isNavVisible, setIsNavVisible] = useState(true)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   // Tracks which section indices have been mounted — sections are never unmounted once added
   const [mountedSections, setMountedSections] = useState<Set<number>>(() => new Set([0, 1]))
   const isTransitioningRef = useRef(false)
@@ -467,6 +468,46 @@ export default function Home() {
         </div>
       )}
 
+      {/* Mobile full-screen menu overlay */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-[60] flex flex-col md:hidden"
+          style={{ background: "rgba(10,10,10,0.97)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}>
+          <div className="flex items-center justify-between px-6 py-6">
+            <span className="font-sans text-xl font-semibold tracking-tight text-foreground">SOL</span>
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex h-10 w-10 items-center justify-center rounded-full"
+              style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)" }}
+              aria-label="Close menu"
+            >
+              <span className="block h-px w-5 bg-foreground rotate-45 translate-y-[0.5px]" />
+              <span className="absolute block h-px w-5 bg-foreground -rotate-45" />
+            </button>
+          </div>
+          <nav className="flex flex-1 flex-col justify-center gap-2 px-8">
+            {["Home", "Case Studies", "Services", "About", "Contact"].map((item, index) => (
+              <button
+                key={item}
+                onClick={() => { scrollToSection(index); setMobileMenuOpen(false) }}
+                className="flex items-center justify-between border-b border-foreground/[0.07] py-5 text-left"
+              >
+                <span className="font-sans text-3xl font-light tracking-tight text-foreground">{item}</span>
+                <span className="font-mono text-xs text-foreground/30">0{index + 1}</span>
+              </button>
+            ))}
+          </nav>
+          <div className="px-8 pb-12">
+            <button
+              onClick={() => { scrollToSection(4); setMobileMenuOpen(false) }}
+              className="w-full rounded-full py-4 font-sans text-sm font-medium text-foreground"
+              style={{ background: "rgba(63,0,255,0.25)", border: "1px solid rgba(63,0,255,0.4)" }}
+            >
+              Book Consultation
+            </button>
+          </div>
+        </div>
+      )}
+
       <nav
         className={`fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-6 transition-all duration-700 md:px-12 ${isLoaded ? "opacity-100" : "opacity-0"
           } ${isNavVisible ? "translate-y-0" : "-translate-y-full"}`}
@@ -495,9 +536,21 @@ export default function Home() {
           ))}
         </div>
 
-        <MagneticButton variant="secondary" onClick={() => scrollToSection(4)}>
+        {/* Desktop CTA */}
+        <MagneticButton variant="secondary" onClick={() => scrollToSection(4)} className="hidden md:flex">
           Consultation
         </MagneticButton>
+
+        {/* Mobile hamburger */}
+        <button
+          onClick={() => setMobileMenuOpen(true)}
+          className="flex md:hidden h-9 w-9 flex-col items-center justify-center gap-[5px] rounded-full"
+          style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)" }}
+          aria-label="Open menu"
+        >
+          <span className="block h-px w-4 bg-foreground" />
+          <span className="block h-px w-4 bg-foreground" />
+        </button>
       </nav>
 
       {/* Outer clip container */}

@@ -112,7 +112,7 @@ export const HeroSection = forwardRef<
           <div
             ref={heroTaglineRef}
             className={`absolute z-20 ${isLoaded ? "sol-hero-tagline-in" : "opacity-0"}`}
-            style={{ top: "8rem", left: "2.5rem", maxWidth: "54%" }}
+            style={{ top: "8rem", left: "2.5rem", maxWidth: "clamp(200px, 80vw, 54%)" }}
           >
             <p className="font-sans text-sm font-light leading-relaxed tracking-wide text-foreground/55">
               SOL Advisers partners with forward-thinking organizations to drive digital innovation and create lasting competitive advantage.
@@ -121,7 +121,7 @@ export const HeroSection = forwardRef<
 
           <div
             ref={heroDescriptorRef}
-            className={`absolute right-8 z-20 md:right-12 ${isLoaded ? "sol-hero-desc-in" : "opacity-0"}`}
+            className={`absolute right-8 z-20 hidden md:flex md:flex-col md:right-12 ${isLoaded ? "sol-hero-desc-in" : "opacity-0"}`}
             style={{ top: "7.5rem" }}
           >
             <div className="mb-3 h-px w-36 bg-foreground/20" />
@@ -132,7 +132,7 @@ export const HeroSection = forwardRef<
 
           <div
             ref={cubeWrapperRef}
-            className="absolute z-10"
+            className="absolute z-10 hidden md:block"
             style={{ left: "58%", top: "30%", right: 0, bottom: 0, overflow: "hidden", touchAction: "none" }}
           >
             {showSpline && (

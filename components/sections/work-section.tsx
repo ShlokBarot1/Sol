@@ -270,7 +270,7 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
           </div>
 
           {/* Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
             {(showAllTestimonials ? [...testimonials, ...dbTestimonials] : [...testimonials, ...dbTestimonials].slice(0, 5)).map((t, i) => {
               const type = cardTypes[i] ?? "A";
 

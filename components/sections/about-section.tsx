@@ -529,8 +529,31 @@ export const AboutSection = forwardRef<
         {/* Divider */}
         <div className="mx-6 border-t border-foreground/[0.08] md:mx-12 lg:mx-16" />
 
-        {/* ── Globe zone: sticky, globe rises from below and zooms up ── */}
-        <div className="about-globe-zone relative" style={{ height: "180vh" }}>
+        {/* ── Mobile globe (simple, centered) — hidden on desktop ── */}
+        <div className="block md:hidden px-6 py-16">
+          <p className="font-mono uppercase tracking-[0.3em] text-foreground/40 mb-6" style={{ fontSize: "0.65rem" }}>
+            Global Reach
+          </p>
+          <div className="flex justify-center mb-8">
+            <RotatingEarth width={280} height={280} markers={CITY_MARKERS} markerOpacityRef={markerOpacityRef} />
+          </div>
+          <div className="flex items-start gap-5">
+            <div className="shrink-0">
+              <div className="font-sans font-bold leading-none tracking-tight text-foreground/85" style={{ fontSize: "clamp(2.5rem,10vw,4rem)" }}>
+                30+
+              </div>
+              <div className="font-sans text-sm font-medium text-foreground/55 mt-2">Countries Served</div>
+            </div>
+            <div className="pt-1 border-l border-foreground/10 pl-5">
+              <p className="font-sans text-sm leading-relaxed text-foreground/45">
+                Active partnerships spanning every major continent and market.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Globe zone: sticky, globe rises from below — desktop only ── */}
+        <div className="about-globe-zone relative hidden md:block" style={{ height: "180vh" }}>
           <div className="sticky top-0 h-screen overflow-visible">
             {/* Globe — left-biased */}
             <div
@@ -549,8 +572,7 @@ export const AboutSection = forwardRef<
 
             {/* Countries panel — shifted left, adjacent to globe */}
             <div
-              className="about-countries-panel absolute top-0 h-full flex flex-col justify-center px-10"
-              style={{ left: "66%", width: "28%" }}
+              className="about-countries-panel flex flex-col justify-center px-6 py-16 md:absolute md:top-0 md:h-full md:px-10 md:[left:66%] md:[width:28%]"
             >
               <p
                 className="font-mono uppercase tracking-[0.3em] text-foreground/40 mb-8"
