@@ -1,11 +1,10 @@
 "use client"
 
 import { forwardRef, useImperativeHandle, useRef, useEffect } from "react"
-import gsap from "gsap"
-import ScrollTrigger from "gsap/ScrollTrigger"
 import { SolFooter } from "@/components/sections/sol-footer"
 
-gsap.registerPlugin(ScrollTrigger)
+type GSAPType = typeof import("gsap").default
+type ScrollTriggerType = typeof import("gsap/ScrollTrigger").default
 
 // Expanded sub-services mirroring Lesse Studio's detailed tag structure
 const SERVICES = [
@@ -103,13 +102,15 @@ interface ServicesSectionProps {
 export const ServicesSection = forwardRef<
   { scrollToTop: () => void; scrollToBottom: () => void; getScrollElement: () => HTMLDivElement | null },
   ServicesSectionProps
->(({ isCurrent = false, scrollToSection }, ref) => {
+>(({ isCurrent = false, scrollToSection }, ref) => {
   const scrollElRef = useRef<HTMLDivElement>(null)
   const blockRefs = useRef<(HTMLDivElement | null)[]>([])
   const titleRefs = useRef<(HTMLHeadingElement | null)[]>([])
   const metaRefs = useRef<(HTMLDivElement | null)[]>([])  // number + description
   const tagGroupRefs = useRef<(HTMLDivElement | null)[]>([])
-  const triggersRef = useRef<ScrollTrigger[]>([])
+  const triggersRef = useRef<any[]>([])
+  const gsapRef = useRef<GSAPType | null>(null)
+  const stRef = useRef<ScrollTriggerType | null>(null)
 
   useImperativeHandle(ref, () => ({
     scrollToTop: () => scrollElRef.current?.scrollTo({ top: 0 }),
@@ -126,110 +127,136 @@ export const ServicesSection = forwardRef<
     if (!isCurrent) {
       triggersRef.current.forEach((t) => t.kill())
       triggersRef.current = []
-      // Reset animated elements to initial state
-      titleRefs.current.forEach((el) => { if (el) gsap.set(el, { y: 60, opacity: 0 }) })
-      metaRefs.current.forEach((el) => { if (el) gsap.set(el, { y: 30, opacity: 0 }) })
-      tagGroupRefs.current.forEach((el) => {
-        if (el) gsap.set(Array.from(el.children), { y: 18, opacity: 0 })
-      })
+      // Reset animated elements to initial state using cached gsap
+      const g = gsapRef.current
+      if (g) {
+        titleRefs.current.forEach((el) => { if (el) g.set(el, { y: 60, opacity: 0 }) })
+        metaRefs.current.forEach((el) => { if (el) g.set(el, { y: 30, opacity: 0 }) })
+        tagGroupRefs.current.forEach((el) => {
+          if (el) g.set(Array.from(el.children), { y: 18, opacity: 0 })
+        })
+      }
       return
     }
 
     if (!scrollEl) return
 
-    // Set initial states before animating
-    titleRefs.current.forEach((el) => { if (el) gsap.set(el, { y: 60, opacity: 0 }) })
-    metaRefs.current.forEach((el) => { if (el) gsap.set(el, { y: 30, opacity: 0 }) })
-    tagGroupRefs.current.forEach((el) => {
-      if (el) gsap.set(Array.from(el.children), { y: 18, opacity: 0 })
-    })
-
-    triggersRef.current.forEach((t) => t.kill())
-    triggersRef.current = []
-
-    // Defer ScrollTrigger.refresh to idle time to avoid forced reflow on main thread
+    let cancelled = false
     let idleHandle: number | ReturnType<typeof setTimeout>
-    const scheduleRefresh = (cb: () => void) => {
-      if (typeof requestIdleCallback !== "undefined") {
-        idleHandle = requestIdleCallback(cb, { timeout: 500 })
-      } else {
-        idleHandle = setTimeout(cb, 100)
+
+    // Lazy-load GSAP + ScrollTrigger only when this section becomes current
+    const init = async () => {
+      if (!gsapRef.current) {
+        const [{ default: gsap }, { default: ScrollTrigger }] = await Promise.all([
+          import("gsap"),
+          import("gsap/ScrollTrigger"),
+        ])
+        gsap.registerPlugin(ScrollTrigger)
+        gsapRef.current = gsap
+        stRef.current = ScrollTrigger
       }
-    }
-    scheduleRefresh(() => {
-      ScrollTrigger.refresh()
+      if (cancelled) return
 
-      blockRefs.current.forEach((block, i) => {
-        if (!block) return
+      const gsap = gsapRef.current!
+      const ScrollTrigger = stRef.current!
 
-        const title = titleRefs.current[i]
-        const meta = metaRefs.current[i]
-        const tagGroup = tagGroupRefs.current[i]
-
-        // Title — big slide-up reveal (Lesse-style)
-        if (title) {
-          const st = ScrollTrigger.create({
-            trigger: block,
-            scroller: scrollEl,
-            start: "top 80%",
-            onEnter: () => {
-              gsap.to(title, {
-                y: 0,
-                opacity: 1,
-                duration: 0.9,
-                ease: "power3.out",
-              })
-            },
-          })
-          triggersRef.current.push(st)
-        }
-
-        // Number label + description — slightly delayed
-        if (meta) {
-          const st = ScrollTrigger.create({
-            trigger: block,
-            scroller: scrollEl,
-            start: "top 80%",
-            onEnter: () => {
-              gsap.to(meta, {
-                y: 0,
-                opacity: 1,
-                duration: 0.7,
-                ease: "power3.out",
-                delay: 0.12,
-              })
-            },
-          })
-          triggersRef.current.push(st)
-        }
-
-        // Tags — stagger in after title lands (Lesse's stagger pattern)
-        if (tagGroup) {
-          const tags = Array.from(tagGroup.children)
-          const st = ScrollTrigger.create({
-            trigger: block,
-            scroller: scrollEl,
-            start: "top 75%",
-            onEnter: () => {
-              gsap.to(tags, {
-                y: 0,
-                opacity: 1,
-                duration: 0.5,
-                ease: "power2.out",
-                stagger: 0.05,
-                delay: 0.25,
-              })
-            },
-          })
-          triggersRef.current.push(st)
-        }
+      // Set initial states before animating
+      titleRefs.current.forEach((el) => { if (el) gsap.set(el, { y: 60, opacity: 0 }) })
+      metaRefs.current.forEach((el) => { if (el) gsap.set(el, { y: 30, opacity: 0 }) })
+      tagGroupRefs.current.forEach((el) => {
+        if (el) gsap.set(Array.from(el.children), { y: 18, opacity: 0 })
       })
-    })
+
+      triggersRef.current.forEach((t) => t.kill())
+      triggersRef.current = []
+
+      // Defer ScrollTrigger.refresh to idle time to avoid forced reflow on main thread
+      const scheduleRefresh = (cb: () => void) => {
+        if (typeof requestIdleCallback !== "undefined") {
+          idleHandle = requestIdleCallback(cb, { timeout: 500 })
+        } else {
+          idleHandle = setTimeout(cb, 100)
+        }
+      }
+      scheduleRefresh(() => {
+        if (cancelled) return
+        ScrollTrigger.refresh()
+
+        blockRefs.current.forEach((block, i) => {
+          if (!block) return
+
+          const title = titleRefs.current[i]
+          const meta = metaRefs.current[i]
+          const tagGroup = tagGroupRefs.current[i]
+
+          // Title — big slide-up reveal (Lesse-style)
+          if (title) {
+            const st = ScrollTrigger.create({
+              trigger: block,
+              scroller: scrollEl,
+              start: "top 80%",
+              onEnter: () => {
+                gsap.to(title, {
+                  y: 0,
+                  opacity: 1,
+                  duration: 0.9,
+                  ease: "power3.out",
+                })
+              },
+            })
+            triggersRef.current.push(st)
+          }
+
+          // Number label + description — slightly delayed
+          if (meta) {
+            const st = ScrollTrigger.create({
+              trigger: block,
+              scroller: scrollEl,
+              start: "top 80%",
+              onEnter: () => {
+                gsap.to(meta, {
+                  y: 0,
+                  opacity: 1,
+                  duration: 0.7,
+                  ease: "power3.out",
+                  delay: 0.12,
+                })
+              },
+            })
+            triggersRef.current.push(st)
+          }
+
+          // Tags — stagger in after title lands (Lesse's stagger pattern)
+          if (tagGroup) {
+            const tags = Array.from(tagGroup.children)
+            const st = ScrollTrigger.create({
+              trigger: block,
+              scroller: scrollEl,
+              start: "top 75%",
+              onEnter: () => {
+                gsap.to(tags, {
+                  y: 0,
+                  opacity: 1,
+                  duration: 0.5,
+                  ease: "power2.out",
+                  stagger: 0.05,
+                  delay: 0.25,
+                })
+              },
+            })
+            triggersRef.current.push(st)
+          }
+        })
+      })
+    }
+
+    init()
 
     return () => {
-      if (typeof requestIdleCallback !== "undefined") {
-        cancelIdleCallback(idleHandle as number)
-      } else {
+      cancelled = true
+      if (typeof requestIdleCallback !== "undefined" && typeof idleHandle === "number") {
+        cancelIdleCallback(idleHandle)
+      } else if (idleHandle !== undefined) {
         clearTimeout(idleHandle as ReturnType<typeof setTimeout>)
       }
       triggersRef.current.forEach((t) => t.kill())

@@ -1,8 +1,6 @@
 "use client"
 
 import { forwardRef, useImperativeHandle, useRef, useEffect } from "react"
-import gsap from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { MagneticButton } from "@/components/magnetic-button"
 import dynamic from "next/dynamic"
 import { SolFooter } from "@/components/sections/sol-footer"
@@ -13,7 +11,8 @@ const RotatingEarth = dynamic(
   { ssr: false }
 )
 
-gsap.registerPlugin(ScrollTrigger)
+type GSAPType = typeof import("gsap").default
+type ScrollTriggerType = typeof import("gsap/ScrollTrigger").ScrollTrigger
 
 const CITY_MARKERS: GlobeMarker[] = [
   { name: "United States", lng: -96.80, lat: 32.78 },
@@ -89,7 +88,22 @@ export const AboutSection = forwardRef<
   const counter3AnimatedRef = useRef(false)
   const markerOpacityRef = useRef<number>(0)
   const hasSetupRef = useRef(false)
-  const gsapCtxRef = useRef<ReturnType<typeof gsap.context> | null>(null)
+  const gsapCtxRef = useRef<any>(null)
+  const gsapRef = useRef<GSAPType | null>(null)
+  const stRef = useRef<ScrollTriggerType | null>(null)
+
+  // Helper to get or lazy-load GSAP + ScrollTrigger
+  const getGsap = async (): Promise<{ gsap: GSAPType; ScrollTrigger: ScrollTriggerType }> => {
+    if (gsapRef.current && stRef.current) return { gsap: gsapRef.current, ScrollTrigger: stRef.current }
+    const [{ default: g }, { ScrollTrigger: ST }] = await Promise.all([
+      import("gsap"),
+      import("gsap/ScrollTrigger"),
+    ])
+    g.registerPlugin(ST)
+    gsapRef.current = g
+    stRef.current = ST
+    return { gsap: g, ScrollTrigger: ST }
+  }
 
   useImperativeHandle(ref, () => ({
     getScrollElement: () => scrollContainerRef.current,
@@ -105,33 +119,37 @@ export const AboutSection = forwardRef<
     if (!isCurrent || counterAnimatedRef.current) return
     counterAnimatedRef.current = true
 
-    const c1 = { val: 0 }
-    gsap.to(c1, {
-      val: 500,
-      duration: 2.4,
-      ease: "power2.out",
-      delay: 0.5,
-      onUpdate: () => {
-        if (counterRef.current) counterRef.current.textContent = String(Math.round(c1.val))
-      },
-    })
+    getGsap().then(({ gsap }) => {
+      const c1 = { val: 0 }
+      gsap.to(c1, {
+        val: 500,
+        duration: 2.4,
+        ease: "power2.out",
+        delay: 0.5,
+        onUpdate: () => {
+          if (counterRef.current) counterRef.current.textContent = String(Math.round(c1.val))
+        },
+      })
 
-    const c2 = { val: 0 }
-    gsap.to(c2, {
-      val: 95,
-      duration: 2.0,
-      ease: "power2.out",
-      delay: 0.8,
-      onUpdate: () => {
-        if (counter2Ref.current) counter2Ref.current.textContent = String(Math.round(c2.val))
-      },
+      const c2 = { val: 0 }
+      gsap.to(c2, {
+        val: 95,
+        duration: 2.0,
+        ease: "power2.out",
+        delay: 0.8,
+        onUpdate: () => {
+          if (counter2Ref.current) counter2Ref.current.textContent = String(Math.round(c2.val))
+        },
+      })
     })
   }, [isCurrent])
 
 
   useEffect(() => {
-    gsap.set(".about-countries-panel", { opacity: 0, x: 40 })
-    gsap.set(".about-globe-wrap", { yPercent: 120, scale: 0.28, opacity: 0, transformOrigin: "center center" })
+    getGsap().then(({ gsap }) => {
+      gsap.set(".about-countries-panel", { opacity: 0, x: 40 })
+      gsap.set(".about-globe-wrap", { yPercent: 120, scale: 0.28, opacity: 0, transformOrigin: "center center" })
+    })
   }, [])
 
   useEffect(() => {
@@ -143,239 +161,241 @@ export const AboutSection = forwardRef<
     if (!scroller || !isCurrent || hasSetupRef.current) return
     hasSetupRef.current = true
 
-    const ctx = gsap.context(() => {
-      // ── Screen 1 text reveals ──
-      gsap.utils.toArray<HTMLElement>(".abt-line").forEach((line, i) => {
-        gsap.fromTo(
-          line,
-          { yPercent: 115 },
-          {
-            yPercent: 0,
-            duration: 1.1,
-            ease: "power4.out",
-            delay: i * 0.11,
-            scrollTrigger: {
-              trigger: line.parentElement,
-              scroller,
-              start: "top 88%",
-              toggleActions: "play none none none",
-            },
-          }
-        )
-      })
+    getGsap().then(({ gsap, ScrollTrigger }) => {
+      const ctx = gsap.context(() => {
+        // ── Screen 1 text reveals ──
+        gsap.utils.toArray<HTMLElement>(".abt-line").forEach((line, i) => {
+          gsap.fromTo(
+            line,
+            { yPercent: 115 },
+            {
+              yPercent: 0,
+              duration: 1.1,
+              ease: "power4.out",
+              delay: i * 0.11,
+              scrollTrigger: {
+                trigger: line.parentElement,
+                scroller,
+                start: "top 88%",
+                toggleActions: "play none none none",
+              },
+            }
+          )
+        })
 
-      gsap.utils.toArray<HTMLElement>(".abt-fade").forEach((el) => {
+        gsap.utils.toArray<HTMLElement>(".abt-fade").forEach((el) => {
+          gsap.fromTo(
+            el,
+            { y: 28, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.9,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: el,
+                scroller,
+                start: "top 88%",
+                toggleActions: "play none none none",
+              },
+            }
+          )
+        })
+
         gsap.fromTo(
-          el,
-          { y: 28, opacity: 0 },
+          ".abt-stat-card",
+          { y: 50, opacity: 0 },
           {
             y: 0,
             opacity: 1,
             duration: 0.9,
             ease: "power3.out",
+            stagger: 0.12,
             scrollTrigger: {
-              trigger: el,
+              trigger: ".abt-stat-card",
               scroller,
-              start: "top 88%",
+              start: "top 92%",
               toggleActions: "play none none none",
             },
           }
         )
-      })
 
-      gsap.fromTo(
-        ".abt-stat-card",
-        { y: 50, opacity: 0 },
-        {
-          y: 0,
+        // 180vh zone → sticky releases at "top -80%"
+        // Delay: "top 90%" → "top 50%"  = 40vh scroll before rise begins
+        // Rise:  "top 50%" → "top 10%"  = 40vh scroll
+        // Dwell: "top 10%" → "top -10%" = 20vh
+        // Exit:  "top -10%" → "top -50%" = 40vh scroll
+
+        gsap.to(".about-globe-wrap", {
+          yPercent: 0,
           opacity: 1,
-          duration: 0.9,
-          ease: "power3.out",
-          stagger: 0.12,
+          scale: () => Math.min(Math.min(window.innerWidth * 0.65, window.innerHeight * 0.78) / GLOBE_SIZE, 0.92),
+          ease: "none",
           scrollTrigger: {
-            trigger: ".abt-stat-card",
+            trigger: ".about-globe-zone",
             scroller,
-            start: "top 92%",
-            toggleActions: "play none none none",
+            start: "top 70%",
+            end: "top -18%",
+            scrub: 1,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              markerOpacityRef.current = Math.max(0, (self.progress - 0.55) / 0.45)
+            },
           },
-        }
-      )
+        })
 
-      // 180vh zone → sticky releases at "top -80%"
-      // Delay: "top 90%" → "top 50%"  = 40vh scroll before rise begins
-      // Rise:  "top 50%" → "top 10%"  = 40vh scroll
-      // Dwell: "top 10%" → "top -10%" = 20vh
-      // Exit:  "top -10%" → "top -50%" = 40vh scroll
+        gsap.to(".about-countries-panel", {
+          opacity: 1,
+          x: 0,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".about-globe-zone",
+            scroller,
+            start: "top 55%",
+            end: "top -23%",
+            scrub: 1,
+            onEnter: () => {
+              if (counter3AnimatedRef.current) return
+              counter3AnimatedRef.current = true
+              const c3 = { val: 0 }
+              gsap.to(c3, {
+                val: 30,
+                duration: 1.6,
+                ease: "power2.out",
+                onUpdate: () => {
+                  if (counter3Ref.current) counter3Ref.current.textContent = String(Math.round(c3.val))
+                },
+              })
+            },
+          },
+        })
 
-      gsap.to(".about-globe-wrap", {
-        yPercent: 0,
-        opacity: 1,
-        scale: () => Math.min(Math.min(window.innerWidth * 0.65, window.innerHeight * 0.78) / GLOBE_SIZE, 0.92),
-        ease: "none",
-        scrollTrigger: {
+        // Globe: gentle tilt during dwell phase
+        gsap.fromTo(".about-globe-wrap",
+          { rotationZ: -4 },
+          {
+            rotationZ: 4,
+            ease: "sine.inOut",
+            immediateRender: false,
+            scrollTrigger: {
+              trigger: ".about-globe-zone",
+              scroller,
+              start: "top -18%",
+              end: "top -68%",
+              scrub: 2,
+            },
+          }
+        )
+
+        // Globe canvas: elastic spring scale settle on entry
+        ScrollTrigger.create({
           trigger: ".about-globe-zone",
           scroller,
-          start: "top 70%",
-          end: "top -18%",
-          scrub: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            markerOpacityRef.current = Math.max(0, (self.progress - 0.55) / 0.45)
-          },
-        },
-      })
-
-      gsap.to(".about-countries-panel", {
-        opacity: 1,
-        x: 0,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".about-globe-zone",
-          scroller,
-          start: "top 55%",
-          end: "top -23%",
-          scrub: 1,
+          start: "top -18%",
+          once: true,
           onEnter: () => {
-            if (counter3AnimatedRef.current) return
-            counter3AnimatedRef.current = true
-            const c3 = { val: 0 }
-            gsap.to(c3, {
-              val: 30,
-              duration: 1.6,
-              ease: "power2.out",
-              onUpdate: () => {
-                if (counter3Ref.current) counter3Ref.current.textContent = String(Math.round(c3.val))
+            gsap.fromTo(".about-globe-wrap canvas",
+              { scale: 1.1 },
+              { scale: 1, duration: 1.4, ease: "elastic.out(1, 0.5)" }
+            )
+          },
+        })
+
+        // Globe canvas: subtle counter-parallax — canvas drifts opposite to scroll for depth
+        gsap.fromTo(".about-globe-wrap canvas",
+          { y: -18 },
+          {
+            y: 18,
+            ease: "none",
+            immediateRender: false,
+            scrollTrigger: {
+              trigger: ".about-globe-zone",
+              scroller,
+              start: "top -18%",
+              end: "top -68%",
+              scrub: 1.5,
+            },
+          }
+        )
+
+        // Exit: globe floats UP smoothly and fades out
+        gsap.fromTo(".about-globe-wrap",
+          { yPercent: 0, opacity: 1 },
+          {
+            yPercent: -70,
+            opacity: 0,
+            ease: "none",
+            immediateRender: false,
+            scrollTrigger: {
+              trigger: ".about-globe-zone",
+              scroller,
+              start: "top -68%",
+              end: "top -78%",
+              scrub: 1,
+            },
+          }
+        )
+
+        gsap.fromTo(".about-countries-panel",
+          { opacity: 1, x: 0 },
+          {
+            opacity: 0,
+            x: -30,
+            ease: "none",
+            immediateRender: false,
+            scrollTrigger: {
+              trigger: ".about-globe-zone",
+              scroller,
+              start: "top -68%",
+              end: "top -78%",
+              scrub: 1,
+            },
+          }
+        )
+
+        // ── Values ──
+        gsap.utils.toArray<HTMLElement>(".abt-value").forEach((el, i) => {
+          gsap.fromTo(
+            el,
+            { y: 40, opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.85,
+              ease: "power3.out",
+              delay: i * 0.09,
+              scrollTrigger: {
+                trigger: el,
+                scroller,
+                start: "top 90%",
+                toggleActions: "play none none none",
               },
-            })
-          },
-        },
-      })
-
-      // Globe: gentle tilt during dwell phase
-      gsap.fromTo(".about-globe-wrap",
-        { rotationZ: -4 },
-        {
-          rotationZ: 4,
-          ease: "sine.inOut",
-          immediateRender: false,
-          scrollTrigger: {
-            trigger: ".about-globe-zone",
-            scroller,
-            start: "top -18%",
-            end: "top -68%",
-            scrub: 2,
-          },
-        }
-      )
-
-      // Globe canvas: elastic spring scale settle on entry
-      ScrollTrigger.create({
-        trigger: ".about-globe-zone",
-        scroller,
-        start: "top -18%",
-        once: true,
-        onEnter: () => {
-          gsap.fromTo(".about-globe-wrap canvas",
-            { scale: 1.1 },
-            { scale: 1, duration: 1.4, ease: "elastic.out(1, 0.5)" }
+            }
           )
-        },
-      })
+        })
 
-      // Globe canvas: subtle counter-parallax — canvas drifts opposite to scroll for depth
-      gsap.fromTo(".about-globe-wrap canvas",
-        { y: -18 },
-        {
-          y: 18,
-          ease: "none",
-          immediateRender: false,
-          scrollTrigger: {
-            trigger: ".about-globe-zone",
-            scroller,
-            start: "top -18%",
-            end: "top -68%",
-            scrub: 1.5,
-          },
-        }
-      )
-
-      // Exit: globe floats UP smoothly and fades out
-      gsap.fromTo(".about-globe-wrap",
-        { yPercent: 0, opacity: 1 },
-        {
-          yPercent: -70,
-          opacity: 0,
-          ease: "none",
-          immediateRender: false,
-          scrollTrigger: {
-            trigger: ".about-globe-zone",
-            scroller,
-            start: "top -68%",
-            end: "top -78%",
-            scrub: 1,
-          },
-        }
-      )
-
-      gsap.fromTo(".about-countries-panel",
-        { opacity: 1, x: 0 },
-        {
-          opacity: 0,
-          x: -30,
-          ease: "none",
-          immediateRender: false,
-          scrollTrigger: {
-            trigger: ".about-globe-zone",
-            scroller,
-            start: "top -68%",
-            end: "top -78%",
-            scrub: 1,
-          },
-        }
-      )
-
-      // ── Values ──
-      gsap.utils.toArray<HTMLElement>(".abt-value").forEach((el, i) => {
+        // ── CTA ──
         gsap.fromTo(
-          el,
-          { y: 40, opacity: 0 },
+          ".abt-cta",
+          { y: 50, opacity: 0 },
           {
             y: 0,
             opacity: 1,
-            duration: 0.85,
+            duration: 1,
             ease: "power3.out",
-            delay: i * 0.09,
             scrollTrigger: {
-              trigger: el,
+              trigger: ".abt-cta",
               scroller,
-              start: "top 90%",
+              start: "top 80%",
               toggleActions: "play none none none",
             },
           }
         )
-      })
+      }, scroller)
 
-      // ── CTA ──
-      gsap.fromTo(
-        ".abt-cta",
-        { y: 50, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: ".abt-cta",
-            scroller,
-            start: "top 80%",
-            toggleActions: "play none none none",
-          },
-        }
-      )
-    }, scroller)
-
-    gsapCtxRef.current = ctx
-    setTimeout(() => ScrollTrigger.refresh(), 100)
+      gsapCtxRef.current = ctx
+      setTimeout(() => ScrollTrigger.refresh(), 100)
+    })
   }, [isCurrent])
 
   const cardGlass = {
@@ -529,14 +549,11 @@ export const AboutSection = forwardRef<
         {/* Divider */}
         <div className="mx-6 border-t border-foreground/[0.08] md:mx-12 lg:mx-16" />
 
-        {/* ── Mobile globe (simple, centered) — hidden on desktop ── */}
-        <div className="block md:hidden px-6 py-16">
+        {/* ── Mobile global reach stat — hidden on desktop ── */}
+        <div className="block md:hidden px-6 py-10">
           <p className="font-mono uppercase tracking-[0.3em] text-foreground/40 mb-6" style={{ fontSize: "0.65rem" }}>
             Global Reach
           </p>
-          <div className="flex justify-center mb-8">
-            <RotatingEarth width={280} height={280} markers={CITY_MARKERS} markerOpacityRef={markerOpacityRef} />
-          </div>
           <div className="flex items-start gap-5">
             <div className="shrink-0">
               <div className="font-sans font-bold leading-none tracking-tight text-foreground/85" style={{ fontSize: "clamp(2.5rem,10vw,4rem)" }}>
@@ -549,6 +566,23 @@ export const AboutSection = forwardRef<
                 Active partnerships spanning every major continent and market.
               </p>
             </div>
+          </div>
+          <div className="mt-6 grid grid-cols-2 gap-3">
+            {[
+              { region: "North America", markets: "US · Canada · Mexico" },
+              { region: "Europe", markets: "UK · Germany · Nordics" },
+              { region: "Asia Pacific", markets: "SG · JP · KR · AU" },
+              { region: "Middle East", markets: "UAE · Israel" },
+            ].map(({ region, markets }) => (
+              <div
+                key={region}
+                className="rounded-lg px-3 py-2.5"
+                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
+              >
+                <p className="font-sans text-xs font-medium text-foreground/60">{region}</p>
+                <p className="font-mono text-[0.58rem] text-foreground/30 tracking-wide mt-0.5">{markets}</p>
+              </div>
+            ))}
           </div>
         </div>
 

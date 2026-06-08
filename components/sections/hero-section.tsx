@@ -74,30 +74,32 @@ export const HeroSection = forwardRef<
     { step: "04", title: "Scale", icon: TrendingUp, desc: "Continuously optimise and expand to sustain competitive advantage." },
   ]
 
+  const [showSpline, setShowSpline] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
+
+  useEffect(() => {
+    setIsDesktop(window.innerWidth >= 768)
+  }, [])
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSpline(true), 2000)
+    return () => clearTimeout(timer)
+  }, [])
+
   const glassCard = {
-    background: "rgba(255,255,255,0.06)",
-    backdropFilter: "blur(16px)",
-    WebkitBackdropFilter: "blur(16px)",
+    background: isDesktop ? "rgba(255,255,255,0.06)" : "rgba(18,18,30,0.90)",
+    ...(isDesktop ? { backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" } : {}),
     border: "1px solid rgba(255,255,255,0.13)",
     boxShadow:
       "inset 0 1.5px 0 0 rgba(255,255,255,0.30), inset 0 -1px 0 0 rgba(0,0,0,0.05), inset 1px 0 0 0 rgba(255,255,255,0.07), inset -1px 0 0 0 rgba(255,255,255,0.07), 0 8px 32px rgba(0,0,0,0.24), 0 2px 8px rgba(0,0,0,0.10)",
   } as React.CSSProperties
 
   const glassIconStyle = {
-    background: "rgba(63,0,255,0.10)",
-    backdropFilter: "blur(8px)",
-    WebkitBackdropFilter: "blur(8px)",
+    background: isDesktop ? "rgba(63,0,255,0.10)" : "rgba(63,0,255,0.18)",
+    ...(isDesktop ? { backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" } : {}),
     border: "1px solid rgba(255,255,255,0.16)",
     boxShadow: "inset 0 1px 0 0 rgba(255,255,255,0.24)",
   } as React.CSSProperties
-
-
-  const [showSpline, setShowSpline] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setShowSpline(true), 2000)
-    return () => clearTimeout(timer)
-  }, [])
 
   return (
     <div className="w-screen h-screen shrink-0 overflow-hidden relative">
@@ -185,7 +187,75 @@ export const HeroSection = forwardRef<
         </div>
 
         {/* ─────────────────────────────── SERVICES ─────────────────────────────── */}
-        <StickyCapabilities scroller={scrollContainerRef} onCardClick={() => scrollToSection(2)} />
+
+        {/* Desktop: GSAP sticky carousel — skipped on mobile to avoid loading GSAP/ScrollTrigger */}
+        {isDesktop && (
+          <div className="hidden md:block">
+            <StickyCapabilities scroller={scrollContainerRef} onCardClick={() => scrollToSection(2)} />
+          </div>
+        )}
+
+        {/* Mobile: static glassmorphic capability cards */}
+        <div className="block md:hidden px-5 py-10">
+          <p className="mb-3 font-mono text-xs uppercase tracking-[0.3em] text-primary/80">/ What We Do</p>
+          <h2 className="font-sans text-2xl font-light tracking-tight text-foreground mb-8">
+            Capabilities built for
+            <br />
+            <span className="text-foreground/35">digital-first growth</span>
+          </h2>
+          <div className="flex flex-col gap-3">
+            {[
+              { num: "01", title: "AI", subtitle: "Innovation", tag: "Machine Learning", desc: "Intelligent systems that learn, adapt, and drive measurable outcomes across your business." },
+              { num: "02", title: "Strategic", subtitle: "Marketing", tag: "Growth · Data-driven", desc: "Data-driven campaigns and brand strategies that compound over time." },
+              { num: "03", title: "Digital", subtitle: "Transformation", tag: "End-to-end modernisation", desc: "End-to-end modernisation — from legacy systems to cloud-native architectures." },
+              { num: "04", title: "Technology", subtitle: "Consulting", tag: "Strategy · Scale", desc: "Strategic technology roadmaps that align your stack with your growth trajectory." },
+            ].map((service, i) => (
+              <button
+                key={i}
+                onClick={() => scrollToSection(2)}
+                className="relative overflow-hidden rounded-2xl p-5 text-left w-full"
+                style={{
+                  background: "rgba(10,10,20,0.82)",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                  boxShadow: [
+                    "inset 0 1.5px 0 0 rgba(255,255,255,0.48)",
+                    "inset 0 -1px 0 0 rgba(255,255,255,0.07)",
+                    "inset 1px 0 0 0 rgba(255,255,255,0.12)",
+                    "inset -1px 0 0 0 rgba(255,255,255,0.12)",
+                    "0 8px 32px rgba(0,0,0,0.28)",
+                  ].join(", "),
+                }}
+              >
+                {/* Glass sheen */}
+                <div
+                  className="pointer-events-none absolute inset-0 rounded-2xl"
+                  style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 35%, transparent 60%)" }}
+                />
+                <div className="relative flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="font-mono text-[10px] tracking-[0.28em] text-white/25">{service.num} / 04</span>
+                      <span
+                        className="rounded-full px-2.5 py-0.5 font-mono text-[9px] uppercase tracking-widest"
+                        style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.14)", color: "rgba(255,255,255,0.55)" }}
+                      >
+                        {service.tag}
+                      </span>
+                    </div>
+                    <p className="font-sans font-black leading-none text-white" style={{ fontSize: "clamp(1.6rem, 6vw, 2.2rem)", letterSpacing: "-0.04em", lineHeight: 0.88 }}>
+                      {service.title}
+                    </p>
+                    <p className="font-sans font-extralight leading-none text-white/50 mb-3" style={{ fontSize: "clamp(1.6rem, 6vw, 2.2rem)", letterSpacing: "-0.04em", lineHeight: 0.88 }}>
+                      {service.subtitle}
+                    </p>
+                    <p className="font-sans text-sm leading-relaxed text-white/40">{service.desc}</p>
+                  </div>
+                  <ArrowRight size={16} className="shrink-0 mt-1 text-white/20" />
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* ─────────────────────────────── ABOUT / STATS ─────────────────────────────── */}
         <div
@@ -260,7 +330,7 @@ export const HeroSection = forwardRef<
         {/* ─────────────────────────────── FEATURED WORK ─────────────────────────────── */}
         <div
           id="hs-featured"
-          className="relative w-full py-16 md:py-20"
+          className="relative w-full py-10 md:py-20"
         >
           <div
             className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full opacity-[0.06] blur-3xl"
@@ -268,13 +338,11 @@ export const HeroSection = forwardRef<
           />
 
           <div className="relative z-10 mx-auto w-full max-w-7xl px-6 md:px-12 lg:px-16">
-            <div id="hs-featured-heading" className="mb-14 flex items-end justify-between">
+            <div id="hs-featured-heading" className="mb-8 md:mb-14 flex items-end justify-between">
               <div>
-                <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-primary/80">/ Selected Work</p>
-                <h2 className="font-sans text-5xl font-light tracking-tight text-foreground md:text-6xl">
+                <p className="mb-3 md:mb-4 font-mono text-xs uppercase tracking-[0.3em] text-primary/80">/ Selected Work</p>
+                <h2 className="font-sans text-3xl md:text-5xl font-light tracking-tight text-foreground md:text-6xl">
                   Work that speaks volumes
-                  <br />
-                  <span className="text-foreground"></span>
                 </h2>
               </div>
               <button
@@ -287,8 +355,72 @@ export const HeroSection = forwardRef<
             </div>
           </div>
 
-          <div className="relative z-10 w-full">
-            <WorkCarousel onViewAll={() => scrollToSection(1)} />
+          {/* Desktop: Swiper carousel — skipped on mobile to avoid loading Swiper.js */}
+          {isDesktop && (
+            <div className="relative z-10 w-full hidden md:block">
+              <WorkCarousel onViewAll={() => scrollToSection(1)} />
+            </div>
+          )}
+
+          {/* Mobile: static glassmorphic cards */}
+          <div className="block md:hidden px-5 space-y-4">
+            {[
+              { title: "Revolutionary Social Media Platform", client: "Confidential", category: "Platform Development", metric: "400%", metricLabel: "User Growth", impacts: ["400% user growth in 12 months", "Strategic brand partnerships", "Acquired at premium multiple"] },
+              { title: "Luxury Hospitality Transformation", client: "EMA Hospitality", category: "Digital Transformation", metric: "375%", metricLabel: "ROI Year 1", impacts: ["Digital-first guest experience", "Revenue management AI", "Occupancy up 28%"] },
+              { title: "Global Ministry Digital Reach", client: "Bill Winston Ministries", category: "Tech Modernization", metric: "250%", metricLabel: "Engagement ↑", impacts: ["Streaming infrastructure rebuilt", "Multilingual content delivery", "Mobile-first in 190+ nations"] },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="relative overflow-hidden rounded-2xl p-5"
+                style={{
+                  background: "rgba(22,22,35,0.92)",
+                  border: "1px solid rgba(255,255,255,0.13)",
+                  boxShadow: "0 8px 32px rgba(0,0,0,0.28)",
+                }}
+              >
+                {/* Specular sheen */}
+                <div
+                  className="pointer-events-none absolute inset-0 rounded-2xl"
+                  style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.03) 35%, transparent 65%)" }}
+                />
+                <div className="relative">
+                  {/* Badge row */}
+                  <div className="flex items-center justify-between mb-4">
+                    <span
+                      className="rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-widest"
+                      style={{ background: "rgba(255,255,255,0.10)", border: "1px solid rgba(255,255,255,0.18)", color: "rgba(255,255,255,0.75)" }}
+                    >
+                      {item.category}
+                    </span>
+                    <span className="font-mono text-[10px] text-foreground/35">{item.client}</span>
+                  </div>
+                  {/* Metric */}
+                  <p className="font-sans font-light leading-none text-foreground mb-1" style={{ fontSize: 52, letterSpacing: "-0.04em" }}>
+                    {item.metric}
+                  </p>
+                  <p className="font-mono text-[10px] uppercase tracking-widest text-foreground/40 mb-3">{item.metricLabel}</p>
+                  {/* Title */}
+                  <h3 className="font-sans font-light text-foreground text-base leading-snug mb-4">{item.title}</h3>
+                  {/* Impacts */}
+                  <ul className="space-y-1.5">
+                    {item.impacts.map((impact, ii) => (
+                      <li key={ii} className="flex items-start gap-2">
+                        <span className="mt-[7px] h-1 w-1 flex-shrink-0 rounded-full bg-foreground/30" />
+                        <span className="text-sm text-foreground/50 leading-relaxed">{impact}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {/* CTA */}
+                  <button
+                    onClick={() => scrollToSection(1)}
+                    className="mt-5 flex items-center gap-2 text-foreground/40"
+                  >
+                    <span className="font-mono text-[11px] uppercase tracking-widest">View all cases</span>
+                    <ArrowRight size={11} />
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 

@@ -10,7 +10,7 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   experimental: {
-    optimizePackageImports: ['lucide-react', 'gsap', 'd3', 'swiper', 'motion', '@supabase/supabase-js'],
+    optimizePackageImports: ['lucide-react', 'gsap', 'd3', 'swiper', 'motion', '@supabase/supabase-js', 'shaders'],
   },
 }
 

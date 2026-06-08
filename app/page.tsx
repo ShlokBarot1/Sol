@@ -57,8 +57,10 @@ export default function Home() {
   const [showShader, setShowShader] = useState(false)
   const [isNavVisible, setIsNavVisible] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  // Tracks which section indices have been mounted — sections are never unmounted once added
-  const [mountedSections, setMountedSections] = useState<Set<number>>(() => new Set([0, 1]))
+  // Tracks which section indices have been mounted — sections are never unmounted once added.
+  // We initialize with {0} so mobile doesn't download section 1 (WorkSection) chunk during SSR/hydration.
+  // Desktop adds section 1 immediately after hydration.
+  const [mountedSections, setMountedSections] = useState<Set<number>>(() => new Set([0]))
   const isTransitioningRef = useRef(false)
   const touchStartY = useRef(0)
   const touchStartX = useRef(0)
@@ -72,10 +74,24 @@ export default function Home() {
     return () => clearTimeout(timer)
   }, [])
 
+  // After hydration, pre-mount section 1 on desktop for smooth first transition.
+  // Mobile remains at {0} to defer WorkSection JS loading.
+  useEffect(() => {
+    if (window.innerWidth >= 768) {
+      setMountedSections(prev => new Set([...prev, 1]))
+    }
+  }, [])
+
+  // On mobile, mount only the current section (no pre-loading adjacent sections)
+  // On desktop, eagerly mount ±1 for instant transitions
   useEffect(() => {
     startTransition(() => setMountedSections(prev => {
       const next = new Set(prev)
-      for (let i = Math.max(0, currentSection - 1); i <= Math.min(4, currentSection + 1); i++) next.add(i)
+      if (window.innerWidth < 768) {
+        next.add(currentSection)
+      } else {
+        for (let i = Math.max(0, currentSection - 1); i <= Math.min(4, currentSection + 1); i++) next.add(i)
+      }
       return next
     }))
   }, [currentSection])
@@ -86,6 +102,7 @@ export default function Home() {
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout>
     const trigger = () => {
+      if (window.innerWidth < 768) return  // WebGL shader too heavy on mobile
       clearTimeout(timer)
       setShowShader(true)
     }
@@ -263,6 +280,9 @@ export default function Home() {
     }
 
     const handleTouchEnd = (e: TouchEvent) => {
+      // Mobile: use natural scrolling, not page-snapping
+      if (window.innerWidth < 768) return
+
       const touchEndY = e.changedTouches[0].clientY
       const touchEndX = e.changedTouches[0].clientX
       const deltaY = touchStartY.current - touchEndY
@@ -304,6 +324,7 @@ export default function Home() {
 
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
+      if (window.innerWidth < 768) return
       if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return
       if (isTransitioningRef.current) return
 
@@ -468,45 +489,65 @@ export default function Home() {
         </div>
       )}
 
-      {/* Mobile full-screen menu overlay */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-[60] flex flex-col md:hidden"
-          style={{ background: "rgba(10,10,10,0.97)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}>
-          <div className="flex items-center justify-between px-6 py-6">
-            <span className="font-sans text-xl font-semibold tracking-tight text-foreground">SOL</span>
-            <button
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex h-10 w-10 items-center justify-center rounded-full"
-              style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)" }}
-              aria-label="Close menu"
-            >
-              <span className="block h-px w-5 bg-foreground rotate-45 translate-y-[0.5px]" />
-              <span className="absolute block h-px w-5 bg-foreground -rotate-45" />
-            </button>
-          </div>
-          <nav className="flex flex-1 flex-col justify-center gap-2 px-8">
-            {["Home", "Case Studies", "Services", "About", "Contact"].map((item, index) => (
-              <button
-                key={item}
-                onClick={() => { scrollToSection(index); setMobileMenuOpen(false) }}
-                className="flex items-center justify-between border-b border-foreground/[0.07] py-5 text-left"
-              >
-                <span className="font-sans text-3xl font-light tracking-tight text-foreground">{item}</span>
-                <span className="font-mono text-xs text-foreground/30">0{index + 1}</span>
-              </button>
-            ))}
-          </nav>
-          <div className="px-8 pb-12">
-            <button
-              onClick={() => { scrollToSection(4); setMobileMenuOpen(false) }}
-              className="w-full rounded-full py-4 font-sans text-sm font-medium text-foreground"
-              style={{ background: "rgba(63,0,255,0.25)", border: "1px solid rgba(63,0,255,0.4)" }}
-            >
-              Book Consultation
-            </button>
-          </div>
+      {/* Mobile full-screen menu overlay — pure CSS transitions, no Framer Motion */}
+      <div
+        className="fixed inset-0 z-[60] flex flex-col md:hidden"
+        style={{
+          background: "rgba(10,10,10,0.97)",
+          transition: "opacity 0.48s cubic-bezier(0.22,1,0.36,1), transform 0.48s cubic-bezier(0.22,1,0.36,1)",
+          opacity: mobileMenuOpen ? 1 : 0,
+          transform: mobileMenuOpen ? "translateY(0)" : "translateY(-100%)",
+          pointerEvents: mobileMenuOpen ? "auto" : "none",
+        }}
+      >
+        <div className="flex items-center justify-between px-6 py-6">
+          <span className="font-sans text-xl font-semibold tracking-tight text-foreground">SOL</span>
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex h-10 w-10 items-center justify-center rounded-full"
+            style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)" }}
+            aria-label="Close menu"
+          >
+            <span className="block h-px w-5 bg-foreground rotate-45 translate-y-[0.5px]" />
+            <span className="absolute block h-px w-5 bg-foreground -rotate-45" />
+          </button>
         </div>
-      )}
+        <nav className="flex flex-1 flex-col justify-center gap-2 px-8">
+          {["Home", "Case Studies", "Services", "About", "Contact"].map((item, index) => (
+            <button
+              key={item}
+              onClick={() => { scrollToSection(index); setMobileMenuOpen(false) }}
+              className="flex items-center justify-between border-b border-foreground/[0.07] py-5 text-left"
+              style={{
+                transition: "opacity 0.35s cubic-bezier(0.22,1,0.36,1), transform 0.35s cubic-bezier(0.22,1,0.36,1)",
+                transitionDelay: mobileMenuOpen ? `${0.12 + index * 0.06}s` : "0s",
+                opacity: mobileMenuOpen ? 1 : 0,
+                transform: mobileMenuOpen ? "translateX(0)" : "translateX(-24px)",
+              }}
+            >
+              <span className="font-sans text-3xl font-light tracking-tight text-foreground">{item}</span>
+              <span className="font-mono text-xs text-foreground/30">0{index + 1}</span>
+            </button>
+          ))}
+        </nav>
+        <div
+          className="px-8 pb-12"
+          style={{
+            transition: "opacity 0.35s cubic-bezier(0.22,1,0.36,1), transform 0.35s cubic-bezier(0.22,1,0.36,1)",
+            transitionDelay: mobileMenuOpen ? "0.44s" : "0s",
+            opacity: mobileMenuOpen ? 1 : 0,
+            transform: mobileMenuOpen ? "translateY(0)" : "translateY(16px)",
+          }}
+        >
+          <button
+            onClick={() => { scrollToSection(4); setMobileMenuOpen(false) }}
+            className="w-full rounded-full py-4 font-sans text-sm font-medium text-foreground"
+            style={{ background: "rgba(63,0,255,0.25)", border: "1px solid rgba(63,0,255,0.4)" }}
+          >
+            Book Consultation
+          </button>
+        </div>
+      </div>
 
       <nav
         className={`fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-6 transition-all duration-700 md:px-12 ${isLoaded ? "opacity-100" : "opacity-0"

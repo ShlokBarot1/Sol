@@ -7,6 +7,9 @@ export function CustomCursor() {
   const innerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    // No cursor on touch/mobile — skip GSAP load entirely
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return
+
     const outer = outerRef.current
     const inner = innerRef.current
     if (!outer || !inner) return
@@ -57,14 +60,14 @@ export function CustomCursor() {
     <>
       <div
         ref={outerRef}
-        className="pointer-events-none fixed left-0 top-0 z-[100] mix-blend-difference"
+        className="pointer-events-none fixed left-0 top-0 z-[100] mix-blend-difference hidden md:block"
         style={{ willChange: "transform" }}
       >
         <div className="h-4 w-4 rounded-full border-2 border-white" />
       </div>
       <div
         ref={innerRef}
-        className="pointer-events-none fixed left-0 top-0 z-[100] mix-blend-difference"
+        className="pointer-events-none fixed left-0 top-0 z-[100] mix-blend-difference hidden md:block"
         style={{ willChange: "transform" }}
       >
         <div className="h-2 w-2 rounded-full bg-white" />

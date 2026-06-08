@@ -306,6 +306,10 @@ export function ContactSection() {
 
   const set = (k: keyof FormData) => (v: string) => setForm(p => ({ ...p, [k]: v }))
 
+  // Computed client-side only — avoids server/client timezone mismatch (hydration error)
+  const [minDate, setMinDate] = useState("")
+  useEffect(() => { setMinDate(new Date().toISOString().split("T")[0]) }, [])
+
   // Native wheel listener fires before the page-level containerRef handler in the
   // bubble chain. stopPropagation() here prevents page.tsx from calling
   // preventDefault() which would block the div from scrolling.
@@ -487,7 +491,7 @@ export function ContactSection() {
         </div>
 
         {/* Form content wrapper — adds horizontal padding */}
-        <div className="px-5 lg:px-12" style={{ display: "flex", flexDirection: "column", gap: "12px", paddingTop: "24px" }}>
+        <div className="px-5 lg:px-12" style={{ display: "flex", flexDirection: "column", gap: "12px", paddingTop: "88px" }}>
 
         {/* 01 — Personal Information */}
         <Section num="01" title="Personal Information">
@@ -541,7 +545,7 @@ export function ContactSection() {
                   type="date"
                   value={form.preferredDate}
                   onChange={e => set("preferredDate")(e.target.value)}
-                  min={new Date().toISOString().split("T")[0]}
+                  min={minDate}
                   style={{
                     ...inputBase,
                     colorScheme: "dark",

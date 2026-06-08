@@ -1,14 +1,14 @@
 "use client";
 
-import React, { forwardRef, useImperativeHandle, useRef, useState, useCallback } from "react";
+import React, { forwardRef, useImperativeHandle, useRef, useState, useCallback, useEffect } from "react";
 import { PortfolioGallery } from "../ui/portfolio-gallery";
 import { caseStudies } from "../CaseStudies/data";
 import { motion, AnimatePresence } from "motion/react";
 import { X } from "lucide-react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SolFooter } from "@/components/sections/sol-footer";
-gsap.registerPlugin(ScrollTrigger);
+
+type GSAPType = typeof import("gsap").default;
+type ScrollTriggerType = typeof import("gsap/ScrollTrigger").default;
 
 // ── Testimonials data ────────────────────────────────────────────────────────
 const testimonials = [
@@ -43,8 +43,6 @@ const splitResult = (r: string) => {
 
 const glassA: React.CSSProperties = {
   background: "rgba(255,255,255,0.055)",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
   border: "1px solid rgba(255,255,255,0.12)",
   boxShadow: "inset 0 1.5px 0 rgba(255,255,255,0.26), inset 0 -1px 0 rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.20)",
   borderRadius: 20,
@@ -55,8 +53,6 @@ const glassA: React.CSSProperties = {
 
 const glassB: React.CSSProperties = {
   background: "rgba(255,255,255,0.042)",
-  backdropFilter: "blur(20px)",
-  WebkitBackdropFilter: "blur(20px)",
   border: "1px solid rgba(255,255,255,0.15)",
   boxShadow: "inset 0 2px 0 rgba(255,255,255,0.32), inset 0 -1px 0 rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.28)",
   borderRadius: 24,
@@ -66,8 +62,6 @@ const glassB: React.CSSProperties = {
 
 const glassC: React.CSSProperties = {
   background: "rgba(255,255,255,0.026)",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
   border: "1px solid rgba(255,255,255,0.08)",
   borderLeft: "2px solid rgba(255,255,255,0.20)",
   boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
@@ -196,41 +190,69 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
     e.stopPropagation();
   }, []);
 
-  const stTriggersRef = useRef<ScrollTrigger[]>([]);
+  const stTriggersRef = useRef<any[]>([]);
+  const gsapRef = useRef<GSAPType | null>(null);
+  const stRef = useRef<ScrollTriggerType | null>(null);
   const [showAllTestimonials, setShowAllTestimonials] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    setIsDesktop(window.innerWidth >= 768);
+  }, []);
+
+  // Helper to lazy-load GSAP + ScrollTrigger
+  const getGsap = async () => {
+    if (gsapRef.current && stRef.current) return { gsap: gsapRef.current, ScrollTrigger: stRef.current };
+    const [{ default: g }, { default: ST }] = await Promise.all([
+      import("gsap"),
+      import("gsap/ScrollTrigger"),
+    ]);
+    g.registerPlugin(ST);
+    gsapRef.current = g;
+    stRef.current = ST;
+    return { gsap: g, ScrollTrigger: ST };
+  };
 
   React.useEffect(() => {
     if (!props.isCurrent) return;
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const cards = Array.from(container.querySelectorAll<HTMLElement>(".t-card"));
-    gsap.set(cards, { opacity: 0, y: 52 });
+    let cancelled = false;
+    let timeout: ReturnType<typeof setTimeout>;
 
-    stTriggersRef.current.forEach(t => t.kill());
-    stTriggersRef.current = [];
+    getGsap().then(({ gsap, ScrollTrigger }) => {
+      if (cancelled) return;
+      const cards = Array.from(container.querySelectorAll<HTMLElement>(".t-card"));
+      gsap.set(cards, { opacity: 0, y: 52 });
 
-    const timeout = setTimeout(() => {
-      const triggers = cards.map((card, i) => {
-        const type = cardTypes[i] ?? "A";
-        const colDelay = type === "B" ? 0 : (i % 2) * 0.13;
-        return ScrollTrigger.create({
-          trigger: card,
-          scroller: container,
-          start: "top 93%",
-          onEnter: () => {
-            gsap.to(card, { opacity: 1, y: 0, duration: 0.85, delay: colDelay, ease: "power3.out" });
-          },
-          onLeaveBack: () => {
-            gsap.to(card, { opacity: 0, y: 52, duration: 0.3, ease: "power2.in" });
-          },
+      stTriggersRef.current.forEach(t => t.kill());
+      stTriggersRef.current = [];
+
+      timeout = setTimeout(() => {
+        if (cancelled) return;
+        const triggers = cards.map((card, i) => {
+          const type = cardTypes[i] ?? "A";
+          const colDelay = type === "B" ? 0 : (i % 2) * 0.13;
+          return ScrollTrigger.create({
+            trigger: card,
+            scroller: container,
+            start: "top 93%",
+            onEnter: () => {
+              gsap.to(card, { opacity: 1, y: 0, duration: 0.85, delay: colDelay, ease: "power3.out" });
+            },
+            onLeaveBack: () => {
+              gsap.to(card, { opacity: 0, y: 52, duration: 0.3, ease: "power2.in" });
+            },
+          });
         });
-      });
-      stTriggersRef.current = triggers;
-      ScrollTrigger.refresh();
-    }, 260);
+        stTriggersRef.current = triggers;
+        ScrollTrigger.refresh();
+      }, 260);
+    });
 
     return () => {
+      cancelled = true;
       clearTimeout(timeout);
       stTriggersRef.current.forEach(t => t.kill());
       stTriggersRef.current = [];
@@ -253,7 +275,7 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
         />
 
         {/* ══════════════════════ TESTIMONIALS ══════════════════════ */}
-        <div style={{ padding: "80px 48px 96px", maxWidth: 1400, margin: "0 auto" }}>
+        <div className="px-4 py-12 md:px-12 md:py-20" style={{ maxWidth: 1400, margin: "0 auto" }}>
 
           {/* Section header */}
           <div className="t-header" style={{ marginBottom: 56 }}>
@@ -270,7 +292,7 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
           </div>
 
           {/* Grid */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2" style={{ gap: 20 }}>
             {(showAllTestimonials ? [...testimonials, ...dbTestimonials] : [...testimonials, ...dbTestimonials].slice(0, 5)).map((t, i) => {
               const type = cardTypes[i] ?? "A";
 
@@ -395,20 +417,22 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                   setTimeout(() => {
                     const container = scrollContainerRef.current;
                     if (!container) return;
-                    const cards = Array.from(container.querySelectorAll<HTMLElement>(".t-card"));
-                    const newCards = cards.slice(5);
-                    gsap.set(newCards, { opacity: 0, y: 52 });
-                    stTriggersRef.current.forEach(t => t.kill());
-                    stTriggersRef.current = [];
-                    const triggers = newCards.map((card, i) => ScrollTrigger.create({
-                      trigger: card,
-                      scroller: container,
-                      start: "top 93%",
-                      onEnter: () => gsap.to(card, { opacity: 1, y: 0, duration: 0.85, delay: (i % 2) * 0.13, ease: "power3.out" }),
-                      onLeaveBack: () => gsap.to(card, { opacity: 0, y: 52, duration: 0.3, ease: "power2.in" }),
-                    }));
-                    stTriggersRef.current = triggers;
-                    ScrollTrigger.refresh();
+                    getGsap().then(({ gsap, ScrollTrigger }) => {
+                      const cards = Array.from(container.querySelectorAll<HTMLElement>(".t-card"));
+                      const newCards = cards.slice(5);
+                      gsap.set(newCards, { opacity: 0, y: 52 });
+                      stTriggersRef.current.forEach(t => t.kill());
+                      stTriggersRef.current = [];
+                      const triggers = newCards.map((card, i) => ScrollTrigger.create({
+                        trigger: card,
+                        scroller: container,
+                        start: "top 93%",
+                        onEnter: () => gsap.to(card, { opacity: 1, y: 0, duration: 0.85, delay: (i % 2) * 0.13, ease: "power3.out" }),
+                        onLeaveBack: () => gsap.to(card, { opacity: 0, y: 52, duration: 0.3, ease: "power2.in" }),
+                      }));
+                      stTriggersRef.current = triggers;
+                      ScrollTrigger.refresh();
+                    });
                   }, 50);
                 }}
                 style={{
@@ -491,37 +515,31 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
       </div>
 
       {/* ══════════════════════ SUBMIT MODAL ══════════════════════ */}
-      <AnimatePresence>
-        {showSubmitModal && (
+      {showSubmitModal && (
           <>
-            <motion.div
-              key="submit-backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
+            <div
               className="absolute inset-0 z-[200]"
-              style={{ background: "rgba(0,0,0,0.65)", backdropFilter: "blur(16px)" }}
+              style={{
+                background: "rgba(0,0,0,0.65)",
+                backdropFilter: isDesktop ? "blur(16px)" : "none",
+                transition: "opacity 0.25s",
+              }}
               onClick={() => { if (formStatus !== "submitting") { setShowSubmitModal(false); setFormStatus("idle"); } }}
             />
-            <motion.div
-              key="submit-panel"
-              initial={{ opacity: 0, scale: 0.96, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.97, y: 12 }}
-              transition={{ duration: 0.40, ease: [0.22, 1, 0.36, 1] }}
+            <div
               className="absolute inset-0 m-auto z-[210] flex flex-col"
               style={{
                 width: "min(92vw, 560px)",
                 height: "fit-content",
                 maxHeight: "85vh",
                 background: "rgba(255,255,255,0.06)",
-                backdropFilter: "blur(16px)",
-                WebkitBackdropFilter: "blur(16px)",
+                backdropFilter: isDesktop ? "blur(16px)" : "none",
+                WebkitBackdropFilter: isDesktop ? "blur(16px)" : "none",
                 border: "1px solid rgba(255,255,255,0.14)",
                 boxShadow: "inset 0 1.5px 0 rgba(255,255,255,0.28), 0 24px 64px rgba(0,0,0,0.45)",
                 borderRadius: 24,
                 overflow: "hidden",
+                animation: "sol-modal-in 0.4s cubic-bezier(0.22,1,0.36,1) both",
               }}
             >
               {/* Top shimmer */}
@@ -661,10 +679,12 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                   </div>
                 )}
               </div>
-            </motion.div>
+            </div>
           </>
         )}
-      </AnimatePresence>
+
+
+
 
       {/* ══════════════════════ MODAL ══════════════════════ */}
       <AnimatePresence>
@@ -725,8 +745,6 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                     "0 8px 32px rgba(0,0,0,0.40)",
                   ].join(", "),
                   borderRadius: 26,
-                  padding: 32,
-                  gap: 18,
                   overflow: "hidden",
                 }}
                 onClick={(e) => e.stopPropagation()}
@@ -736,6 +754,13 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                 <div className="pointer-events-none absolute inset-x-0 top-0 h-px" style={{ background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.55) 30%, rgba(255,255,255,0.55) 70%, transparent 100%)" }} />
                 {/* Inner light scatter */}
                 <div className="pointer-events-none absolute inset-0 rounded-[26px]" style={{ background: "linear-gradient(145deg, rgba(255,255,255,0.07) 0%, transparent 40%, transparent 60%, rgba(255,255,255,0.03) 100%)" }} />
+
+                {/* Scrollable content wrapper — enables full scroll on mobile */}
+                <div
+                  ref={modalScrollRef}
+                  className="relative flex flex-col flex-1 overflow-y-auto min-h-0"
+                  style={{ padding: 32, gap: 18, scrollbarWidth: "none", msOverflowStyle: "none" }}
+                >
 
                 {/* ── HEADER ── */}
                 <motion.div
@@ -769,7 +794,7 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2, duration: 0.35 }}
-                  className="font-sans text-[13px] text-white/42 leading-relaxed shrink-0 line-clamp-3"
+                  className="font-sans text-[13px] text-white/42 leading-relaxed shrink-0"
                   style={{ maxWidth: "70ch" }}
                 >
                   {s.description}
@@ -780,7 +805,7 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.26, duration: 0.36, ease: [0.22,1,0.36,1] }}
-                  className="grid grid-cols-3 gap-3 shrink-0"
+                  className="grid grid-cols-1 sm:grid-cols-3 gap-3 shrink-0"
                 >
                   <div className="flex flex-col p-4" style={glass}>
                     <span className={label}>Timeline</span>
@@ -791,11 +816,11 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                   </div>
                   <div className="flex flex-col p-4" style={glass}>
                     <span className={label}>ROI</span>
-                    <span className="font-sans text-[15px] font-semibold text-white leading-snug line-clamp-2">{s.roi}</span>
+                    <span className="font-sans text-[15px] font-semibold text-white leading-snug">{s.roi}</span>
                   </div>
                   <div className="flex flex-col p-4" style={{ ...glass, background: "rgba(255,255,255,0.052)" }}>
                     <span className={label}>Key Result</span>
-                    <span className="font-sans text-[13px] font-medium text-white/80 leading-snug line-clamp-2">{s.highlight}</span>
+                    <span className="font-sans text-[13px] font-medium text-white/80 leading-snug">{s.highlight}</span>
                   </div>
                 </motion.div>
 
@@ -804,22 +829,22 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.32, duration: 0.36, ease: [0.22,1,0.36,1] }}
-                  className="grid grid-cols-2 gap-3 flex-1 min-h-0"
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-3"
                 >
                   {/* Challenge + Solution */}
-                  <div className="flex flex-col p-5 overflow-hidden" style={glass}>
+                  <div className="flex flex-col p-5" style={glass}>
                     <span className={label}>The Challenge</span>
-                    <p className="font-sans text-[13px] text-white/52 leading-relaxed line-clamp-5">{s.challenge}</p>
-                    <div className="mt-auto pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                    <p className="font-sans text-[13px] text-white/52 leading-relaxed">{s.challenge}</p>
+                    <div className="mt-6 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
                       <span className={label}>The Solution</span>
-                      <p className="font-sans text-[13px] text-white/52 leading-relaxed line-clamp-4">
+                      <p className="font-sans text-[13px] text-white/52 leading-relaxed">
                         {s.solution.replace(/\n- /g, " · ").replace(/\n/g, " ")}
                       </p>
                     </div>
                   </div>
 
                   {/* Key Impacts */}
-                  <div className="flex flex-col p-5 overflow-hidden" style={glass}>
+                  <div className="flex flex-col p-5" style={glass}>
                     <span className={label}>Key Impacts</span>
                     <ul className="flex flex-col gap-3 mt-1">
                       {s.impacts.map((impact: string, i: number) => (
@@ -837,6 +862,8 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                     </ul>
                   </div>
                 </motion.div>
+
+                </div>{/* end scroll wrapper */}
               </motion.div>
             </>
           );
