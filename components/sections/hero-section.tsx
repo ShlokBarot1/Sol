@@ -49,6 +49,8 @@ export const HeroSection = forwardRef<
   }))
 
   useEffect(() => {
+    // Cube is desktop-only (hidden md:block) — skip non-passive listener on mobile
+    if (window.innerWidth < 768) return
     const wrapper = cubeWrapperRef.current
     if (!wrapper) return
 
@@ -82,6 +84,8 @@ export const HeroSection = forwardRef<
   }, [])
 
   useEffect(() => {
+    // Spline iframe is desktop-only (hidden md:block) — skip timer on mobile
+    if (window.innerWidth < 768) return
     const timer = setTimeout(() => setShowSpline(true), 2000)
     return () => clearTimeout(timer)
   }, [])
@@ -264,7 +268,7 @@ export const HeroSection = forwardRef<
           style={{ minHeight: "100vh" }}
         >
           <div
-            className="pointer-events-none absolute left-1/2 top-1/2 h-[550px] w-[550px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.055] blur-3xl"
+            className="pointer-events-none absolute left-1/2 top-1/2 h-[550px] w-[550px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.055] blur-3xl hidden md:block"
             style={{ background: "radial-gradient(circle, #3F00FF 0%, transparent 70%)" }}
           />
 
@@ -333,7 +337,7 @@ export const HeroSection = forwardRef<
           className="relative w-full py-10 md:py-20"
         >
           <div
-            className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full opacity-[0.06] blur-3xl"
+            className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full opacity-[0.06] blur-3xl hidden md:block"
             style={{ background: "radial-gradient(circle, #4400FF 0%, transparent 70%)" }}
           />
 
@@ -430,7 +434,7 @@ export const HeroSection = forwardRef<
           className="relative w-full px-6 py-16 md:py-20 lg:px-16"
         >
           <div
-            className="pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.05] blur-3xl"
+            className="pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-[0.05] blur-3xl hidden md:block"
             style={{ background: "radial-gradient(circle, #3F00FF 0%, transparent 70%)" }}
           />
 
@@ -475,7 +479,7 @@ export const HeroSection = forwardRef<
         >
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div
-              className="h-[450px] w-[650px] rounded-full opacity-[0.07] blur-3xl"
+              className="h-[450px] w-[650px] rounded-full opacity-[0.07] blur-3xl hidden md:block"
               style={{ background: "radial-gradient(circle, #3F00FF 0%, transparent 70%)" }}
             />
           </div>
@@ -531,6 +535,19 @@ export const HeroSection = forwardRef<
         .sol-hero-label-in   { animation: sol-hero-fade-up-xs   0.6s cubic-bezier(0.215,0.61,0.355,1) 0.65s both; }
         .sol-hero-heading-in { animation: sol-hero-slide-up-lg  1.1s cubic-bezier(0.16,1,0.3,1) 0.7s both; }
         .sol-hero-scroll-in  { animation: sol-hero-fade-in      0.6s cubic-bezier(0.215,0.61,0.355,1) 0.85s both; }
+        @media (max-width: 767px) {
+          /* On mobile, skip all animation delays so LCP element is immediately visible
+             when the loading screen lifts. The 700ms heading delay alone accounts for
+             ~2-3s of LCP on throttled hardware. */
+          .sol-hero-heading-in,
+          .sol-hero-label-in,
+          .sol-hero-tagline-in,
+          .sol-hero-scroll-in {
+            animation: none;
+            opacity: 1;
+            transform: none;
+          }
+        }
         @media (prefers-reduced-motion: reduce) {
           .sol-hero-tagline-in, .sol-hero-desc-in, .sol-hero-label-in,
           .sol-hero-heading-in, .sol-hero-scroll-in {

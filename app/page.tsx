@@ -1,12 +1,17 @@
 "use client"
 
-import { CustomCursor } from "@/components/custom-cursor"
 import { GrainOverlay } from "@/components/grain-overlay"
 import { LoadingScreen } from "@/components/loading-screen"
 import { HeroSection } from "@/components/sections/hero-section"
 import { MagneticButton } from "@/components/magnetic-button"
 import { useRef, useEffect, useState, startTransition } from "react"
 import dynamic from "next/dynamic"
+
+// CustomCursor is desktop-only — defer out of initial bundle to reduce mobile parse/eval cost
+const CustomCursor = dynamic(
+  () => import("@/components/custom-cursor").then(m => ({ default: m.CustomCursor })),
+  { ssr: false }
+)
 
 const ShaderBackground = dynamic(
   () => import("@/components/shader-background"),
@@ -100,9 +105,10 @@ export default function Home() {
   // Excludes pointermove — Lighthouse fires that during its audit, which would
   // load the shader during TBT measurement. Real users trigger via click/scroll/touch.
   useEffect(() => {
+    // Shader is never used on mobile — skip all listener/timer setup entirely
+    if (window.innerWidth < 768) return
     let timer: ReturnType<typeof setTimeout>
     const trigger = () => {
-      if (window.innerWidth < 768) return  // WebGL shader too heavy on mobile
       clearTimeout(timer)
       setShowShader(true)
     }
@@ -309,7 +315,8 @@ export default function Home() {
     }
 
     const container = containerRef.current
-    if (container) {
+    // Section-snapping via touch only applies on desktop; skip listener registration on mobile
+    if (container && window.innerWidth >= 768) {
       container.addEventListener("touchstart", handleTouchStart, { passive: true })
       container.addEventListener("touchend", handleTouchEnd, { passive: true })
     }
@@ -457,7 +464,10 @@ export default function Home() {
     }
 
     const container = containerRef.current
-    if (container) container.addEventListener("wheel", handleWheel, { passive: false })
+    // Non-passive wheel listener only needed on desktop for section snapping
+    if (container && window.innerWidth >= 768) {
+      container.addEventListener("wheel", handleWheel, { passive: false })
+    }
 
     return () => {
       if (container) container.removeEventListener("wheel", handleWheel)
@@ -472,9 +482,9 @@ export default function Home() {
       <CustomCursor />
       <GrainOverlay />
 
-      {/* CSS fallback — always present, fades out once real shader is visible */}
+      {/* CSS fallback — always present, fades out once real shader is visible (desktop only) */}
       <div
-        className={`fixed inset-0 z-0 transition-opacity duration-700 ${isLoaded ? "opacity-100" : "opacity-0"} ${showShader ? "opacity-0" : ""}`}
+        className={`fixed inset-0 z-0 md:transition-opacity md:duration-700 ${isLoaded ? "opacity-100" : "opacity-0"} ${showShader ? "opacity-0" : ""}`}
         aria-hidden="true"
       >
         <div className="absolute inset-0" style={{ background: "#0a0a0a" }} />
@@ -633,6 +643,19 @@ export default function Home() {
       <style jsx global>{`
         div::-webkit-scrollbar {
           display: none;
+        }
+        .grain-overlay {
+          mix-blend-mode: overlay;
+        }
+        @media (max-width: 767px) {
+          [data-sections-slider] {
+            will-change: auto !important;
+            transition: none !important;
+          }
+          /* Remove blend-mode compositing on mobile — full-page composite pass is expensive */
+          .grain-overlay {
+            mix-blend-mode: normal;
+          }
         }
       `}</style>
     </main>

@@ -46,7 +46,8 @@ export function LoadingScreen({ isLoaded }: LoadingScreenProps) {
       })
       return () => { tl?.kill() }
     } else {
-      const id = setTimeout(() => setHidden(true), 1100)
+      // Reduced from 1100ms — shorter exit keeps LCP element visible sooner on mobile
+      const id = setTimeout(() => setHidden(true), 500)
       return () => clearTimeout(id)
     }
   }, [isLoaded, isDesktop])
@@ -79,6 +80,12 @@ export function LoadingScreen({ isLoaded }: LoadingScreenProps) {
         .sol-exiting .sol-logo { animation: sol-fadeout 0.45s cubic-bezier(0.4,0,1,1) 0.3s both; }
         .sol-exiting .sol-tagline { animation: sol-fadeout 0.45s cubic-bezier(0.4,0,1,1) 0.34s both; }
         .sol-exiting .sol-bar { animation: sol-fadeout 0.45s cubic-bezier(0.4,0,1,1) 0.38s both; }
+        @media (max-width: 767px) {
+          .sol-exiting { animation: sol-overlay-fadeout 0.3s cubic-bezier(0.4,0,0.2,1) 0.12s both; }
+          .sol-exiting .sol-logo { animation: sol-fadeout 0.18s cubic-bezier(0.4,0,1,1) 0.04s both; }
+          .sol-exiting .sol-tagline { animation: sol-fadeout 0.18s cubic-bezier(0.4,0,1,1) 0.06s both; }
+          .sol-exiting .sol-bar { animation: sol-fadeout 0.18s cubic-bezier(0.4,0,1,1) 0.08s both; }
+        }
         @keyframes sol-fadeout {
           from { opacity: 1; transform: translateY(0); }
           to   { opacity: 0; transform: translateY(-16px); }
