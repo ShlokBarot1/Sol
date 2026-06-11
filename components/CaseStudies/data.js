@@ -130,5 +130,28 @@ export const caseStudies = [
     image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80",
     accentColor: "#1275d8",
     gradient: "from-[#0a1628] to-[#050505]"
+  },
+  {
+    id: 7,
+    title: "Full-Stack Brand Launch Under Emergency",
+    client: "DaBird — Apparel & Accessories",
+    category: "E-Commerce & Performance Marketing",
+    highlight: "400% improvement in content delivery & reach",
+    timeline: "Under 4 days",
+    roi: "0% → 100% sales velocity on new storefront",
+    challenge: "DaBird's Squarespace store was abruptly suspended mid-campaign — no warning, no orders, no pixel history, no brand infrastructure. With an active campaign window already running, the entire tech stack, storefront, and paid media setup had to be rebuilt simultaneously from scratch.",
+    solution: "Executed a full parallel rebuild under live campaign pressure: custom Shopify store designed and launched in under 4 days, complete Meta campaign architecture built from audience research through ad setup, pixel reconstructed with verified conversion events, end-to-end creative production including reels, static ads, and product-led UGC, plus organic content strategy across all three platforms — roadmap, ideation, and execution all handled in-house by SOL Advisers.",
+    description: "When DaBird's storefront was suspended mid-campaign with no warning, we rebuilt everything from zero — new Shopify store, pixel infrastructure, creatives, and live Meta campaigns — in under 4 days, turning a crisis into a growth foundation.",
+    impacts: [
+      "100% store rebuild — Squarespace to custom Shopify in under 4 days",
+      "Grew from 0% to full order velocity on new storefront",
+      "~100% increase in paid reach vs. previous campaign baseline",
+      "Meta Pixel rebuilt with full conversion event tracking restored",
+      "End-to-end creative production: reels, static ads, UGC direction",
+      "Organic growth across Instagram, Facebook & TikTok from ground up"
+    ],
+    image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=800&q=80",
+    accentColor: "#1275d8",
+    gradient: "from-[#0a1628] to-[#050505]"
   }
 ];

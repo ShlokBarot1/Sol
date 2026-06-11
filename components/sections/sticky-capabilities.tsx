@@ -166,13 +166,13 @@ export function StickyCapabilities({ scroller, onCardClick }: StickyCapabilities
     <div id="hs-services" className="relative w-full overflow-hidden px-6 md:px-12 lg:px-16">
       <div ref={stickyRef} className="sticky-cards relative w-full" style={{ height: "100vh" }}>
         {/* Section header */}
-        <div className="relative z-20 mx-auto w-full max-w-7xl flex items-end justify-between pb-6 pt-12">
+        <div className="relative z-20 mx-auto w-full max-w-7xl flex items-end justify-between pb-4 pt-8 md:pb-6 md:pt-12">
           <div>
             <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-primary/80">/ What We Do</p>
             <h2 className="font-sans text-3xl font-light tracking-tight text-foreground md:text-5xl lg:text-6xl">
-              Capabilities built for
+              When Growth Needs
               <br />
-              <span className="text-foreground/35">digital-first growth</span>
+              <span className="text-foreground/35">More Than Luck</span>
             </h2>
           </div>
           <div className="hidden shrink-0 flex-col items-end gap-1 lg:flex">

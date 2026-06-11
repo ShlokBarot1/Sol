@@ -262,6 +262,15 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
 
   return (
     <div className="w-screen h-screen shrink-0 overflow-hidden relative">
+      <style>{`
+        @media (max-width: 639px) {
+          .t-card-b-inner { flex-direction: column !important; }
+          .t-card-b-left { flex: none !important; padding: 20px !important; }
+          .t-card-b-right { padding: 20px !important; }
+          .t-card-b-divider { display: none !important; }
+          .t-card { margin-left: 0 !important; margin-right: 0 !important; }
+        }
+      `}</style>
       {/* Gallery */}
       <div
         ref={scrollContainerRef}
@@ -275,7 +284,7 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
         />
 
         {/* ══════════════════════ TESTIMONIALS ══════════════════════ */}
-        <div className="px-4 py-12 md:px-12 md:py-20" style={{ maxWidth: 1400, margin: "0 auto" }}>
+        <div className="px-5 py-10 md:px-12 md:py-20" style={{ maxWidth: 1400, margin: "0 auto" }}>
 
           {/* Section header */}
           <div className="t-header" style={{ marginBottom: 56 }}>
@@ -335,13 +344,13 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
 
               /* ── Card B: featured horizontal, full-width ── */
               if (type === "B") return (
-                <div key={i} className="t-card" style={{ ...glassB, gridColumn: "1 / -1", display: "flex", padding: 0 }}>
+                <div key={i} className="t-card t-card-b-inner" style={{ ...glassB, gridColumn: "1 / -1", display: "flex", padding: 0 }}>
                   {/* Top shimmer */}
                   <div style={{ position: "absolute", left: "8%", right: "8%", top: 0, height: 1, background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.42) 35%, rgba(255,255,255,0.42) 65%, transparent)", pointerEvents: "none" }} />
                   <div style={{ position: "absolute", inset: 0, borderRadius: 24, background: "linear-gradient(145deg, rgba(255,255,255,0.055) 0%, transparent 40%)", pointerEvents: "none" }} />
 
                   {/* Left: quote */}
-                  <div style={{ flex: "0 0 58%", padding: "40px 44px", display: "flex", flexDirection: "column" }}>
+                  <div className="t-card-b-left" style={{ flex: "0 0 58%", padding: "40px 44px", display: "flex", flexDirection: "column" }}>
                     <span style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.28em", color: "rgba(255,255,255,0.32)", border: "1px solid rgba(255,255,255,0.10)", borderRadius: 20, padding: "4px 10px", width: "fit-content", marginBottom: 22 }}>
                       {t.industry}
                     </span>
@@ -362,10 +371,10 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                   </div>
 
                   {/* Vertical divider */}
-                  <div style={{ width: 1, background: "rgba(255,255,255,0.09)", alignSelf: "stretch", flexShrink: 0 }} />
+                  <div className="t-card-b-divider" style={{ width: 1, background: "rgba(255,255,255,0.09)", alignSelf: "stretch", flexShrink: 0 }} />
 
                   {/* Right: key results */}
-                  <div style={{ flex: 1, padding: "40px 44px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
+                  <div className="t-card-b-right" style={{ flex: 1, padding: "40px 44px", display: "flex", flexDirection: "column", justifyContent: "center", gap: 24 }}>
                     <span style={{ fontFamily: "monospace", fontSize: 9, letterSpacing: "0.30em", color: "rgba(255,255,255,0.26)", textTransform: "uppercase" }}>Key Results</span>
                     {t.results.map((r, ri) => {
                       const { metric, desc } = splitResult(r);
@@ -520,7 +529,7 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
             <div
               className="absolute inset-0 z-[200]"
               style={{
-                background: "rgba(0,0,0,0.65)",
+                background: isDesktop ? "rgba(0,0,0,0.65)" : "rgba(0,0,0,0.80)",
                 backdropFilter: isDesktop ? "blur(16px)" : "none",
                 transition: "opacity 0.25s",
               }}
@@ -532,7 +541,7 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                 width: "min(92vw, 560px)",
                 height: "fit-content",
                 maxHeight: "85vh",
-                background: "rgba(255,255,255,0.06)",
+                background: isDesktop ? "rgba(255,255,255,0.06)" : "rgba(10,10,20,0.96)",
                 backdropFilter: isDesktop ? "blur(16px)" : "none",
                 WebkitBackdropFilter: isDesktop ? "blur(16px)" : "none",
                 border: "1px solid rgba(255,255,255,0.14)",
@@ -810,8 +819,7 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                   <div className="flex flex-col p-4" style={glass}>
                     <span className={label}>Timeline</span>
                     <span className="font-sans text-2xl font-light text-white leading-none">
-                      {s.timeline.split(" ")[0]}
-                      <span className="text-sm text-white/38 ml-1.5">months</span>
+                      {s.timeline}
                     </span>
                   </div>
                   <div className="flex flex-col p-4" style={glass}>

@@ -25,6 +25,10 @@ function getGeoJson(): Promise<FeatureCollection<Polygon | MultiPolygon, GeoJson
   return _fetchPromise
 }
 
+// Call this early (e.g. after page load) to warm up the JSON cache so the
+// globe renders instantly when the About section first mounts.
+export function prefetchGlobeData() { getGeoJson() }
+
 interface RotatingEarthProps {
   width?: number
   height?: number

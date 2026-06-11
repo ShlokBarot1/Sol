@@ -7,12 +7,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 export async function POST(req: NextRequest) {
   const body = await req.json()
 
-  const {
-    firstName, lastName, email, phone,
-    companyName, role, companySize, industry,
-    projectDescription, budgetRange, projectTimeline,
-    preferredDate, preferredTime,
-  } = body
+  const { firstName, lastName, email, phone, companyName, projectDescription } = body
 
   if (!firstName || !lastName || !email || !companyName) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
@@ -26,14 +21,7 @@ export async function POST(req: NextRequest) {
       email,
       phone,
       company_name: companyName,
-      role,
-      company_size: companySize,
-      industry,
       project_description: projectDescription,
-      budget_range: budgetRange,
-      project_timeline: projectTimeline,
-      preferred_date: preferredDate,
-      preferred_time: preferredTime,
     },
   ])
 
@@ -58,13 +46,8 @@ export async function POST(req: NextRequest) {
           </h2>
           <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
             <tr><td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;width:120px;">Email</td><td style="color:rgba(255,255,255,0.85);font-size:13px;">${email}</td></tr>
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;">Phone</td><td style="color:rgba(255,255,255,0.85);font-size:13px;">${phone}</td></tr>
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;">Company</td><td style="color:rgba(255,255,255,0.85);font-size:13px;">${companyName} · ${companySize}</td></tr>
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;">Role</td><td style="color:rgba(255,255,255,0.85);font-size:13px;">${role}</td></tr>
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;">Industry</td><td style="color:rgba(255,255,255,0.85);font-size:13px;">${industry}</td></tr>
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;">Budget</td><td style="color:rgba(255,255,255,0.85);font-size:13px;">${budgetRange}</td></tr>
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;">Timeline</td><td style="color:rgba(255,255,255,0.85);font-size:13px;">${projectTimeline}</td></tr>
-            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;">Preferred</td><td style="color:rgba(255,255,255,0.85);font-size:13px;">${preferredDate} at ${preferredTime}</td></tr>
+            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;">Phone</td><td style="color:rgba(255,255,255,0.85);font-size:13px;">${phone || "—"}</td></tr>
+            <tr><td style="padding:6px 0;color:rgba(255,255,255,0.4);font-size:12px;">Company</td><td style="color:rgba(255,255,255,0.85);font-size:13px;">${companyName}</td></tr>
           </table>
           <p style="font-family:monospace;font-size:10px;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:8px;">Project Description</p>
           <p style="font-size:13px;line-height:1.65;color:rgba(255,255,255,0.65);border-left:2px solid rgba(255,255,255,0.15);padding-left:14px;margin-bottom:28px;">
@@ -72,7 +55,7 @@ export async function POST(req: NextRequest) {
           </p>
           <div style="padding-top:20px;border-top:1px solid rgba(255,255,255,0.08);">
             <p style="font-size:11px;color:rgba(255,255,255,0.3);">
-              Client has been directed to Calendly to schedule and will be redirected to payment after booking.
+              Client has been directed to Calendly to schedule their free consultation.
             </p>
           </div>
         </div>

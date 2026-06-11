@@ -64,16 +64,16 @@ export const HeroSection = forwardRef<
 
 
   const stats = [
-    { value: "500+", label: "Projects Delivered", sublabel: "Worldwide" },
-    { value: "30+", label: "Countries", sublabel: "Global Footprint" },
-    { value: "$2B+", label: "Client Value", sublabel: "Generated" },
+    { value: "500+", label: "Problems Solved", sublabel: "Worldwide" },
+    { value: "30+", label: "Markets Reached", sublabel: "Global Footprint" },
+    { value: "$2B+", label: "Value Created", sublabel: "Generated" },
   ]
 
   const processSteps = [
-    { step: "01", title: "Discover", icon: Target, desc: "Deep-dive into your goals, challenges, and untapped opportunities." },
-    { step: "02", title: "Strategize", icon: BarChart3, desc: "Craft bespoke roadmaps aligned to your vision and market dynamics." },
-    { step: "03", title: "Execute", icon: Zap, desc: "Implement with precision — agile, data-driven, and results-focused." },
-    { step: "04", title: "Scale", icon: TrendingUp, desc: "Continuously optimise and expand to sustain competitive advantage." },
+    { step: "01", title: "Diagnose", icon: Target, desc: "Find the real problem." },
+    { step: "02", title: "Design", icon: BarChart3, desc: "Build the right solution." },
+    { step: "03", title: "Deploy", icon: Zap, desc: "Execute with precision." },
+    { step: "04", title: "Grow", icon: TrendingUp, desc: "Create lasting momentum." },
   ]
 
   const [showSpline, setShowSpline] = useState(false)
@@ -117,11 +117,11 @@ export const HeroSection = forwardRef<
         <div className="relative h-screen w-full">
           <div
             ref={heroTaglineRef}
-            className={`absolute z-20 ${isLoaded ? "sol-hero-tagline-in" : "opacity-0"}`}
-            style={{ top: "8rem", left: "2.5rem", maxWidth: "clamp(200px, 80vw, 54%)" }}
+            className={`absolute z-20 px-5 md:pl-10 md:pr-0 ${isLoaded ? "sol-hero-tagline-in" : "opacity-0"}`}
+            style={{ top: "8rem", left: 0, maxWidth: "clamp(200px, 90vw, 54%)" }}
           >
             <p className="font-sans text-sm font-light leading-relaxed tracking-wide text-foreground/55">
-              SOL Advisers partners with forward-thinking organizations to drive digital innovation and create lasting competitive advantage.
+              When markets shift, plans break, and certainty disappears, that&rsquo;s where we do our best work. SOL partners with leaders to uncover clarity, create direction, and build resilient businesses.
             </p>
           </div>
 
@@ -132,7 +132,7 @@ export const HeroSection = forwardRef<
           >
             <div className="mb-3 h-px w-36 bg-foreground/20" />
             <p className="max-w-[200px] font-mono text-[11px] leading-relaxed text-foreground/50">
-              Strategic advisory for bold organizations shaping the digital future.
+              For organizations facing complexity, change, or a healthy amount of chaos.
             </p>
           </div>
 
@@ -163,18 +163,18 @@ export const HeroSection = forwardRef<
             )}
           </div>
 
-          <div className="absolute bottom-0 left-0 z-20" style={{ paddingLeft: "2.5rem", paddingBottom: "0.5rem" }}>
+          <div className="absolute bottom-20 md:bottom-0 left-0 z-20 px-5 pb-1 md:px-0 md:pb-2" style={{ paddingLeft: undefined }}>
             <p
               ref={heroLabelRef}
-              className={`font-mono uppercase tracking-widest text-foreground/30 ${isLoaded ? "sol-hero-label-in" : "opacity-0"}`}
+              className={`font-mono uppercase tracking-widest text-foreground/30 ${isLoaded ? "sol-hero-label-in" : "opacity-0"} pl-0 md:pl-10`}
               style={{ fontSize: "0.65rem", marginBottom: "0.3rem" }}
             >
-              Strategic Advisory
+              Sometimes the best opportunities start with being
             </p>
             <h1
               ref={heroHeadingRef}
               data-lcp-heading
-              className={`font-sans font-black text-foreground ${isLoaded ? "sol-hero-heading-in" : "opacity-0"}`}
+              className={`font-sans font-black text-foreground ${isLoaded ? "sol-hero-heading-in" : "opacity-0"} pl-0 md:pl-10`}
               style={{ fontSize: "clamp(96px, 21vw, 300px)", letterSpacing: "-0.04em", lineHeight: 0.84 }}
             >
               SOL
@@ -200,12 +200,12 @@ export const HeroSection = forwardRef<
         )}
 
         {/* Mobile: static glassmorphic capability cards */}
-        <div className="block md:hidden px-5 py-10">
+        <div className="block md:hidden px-6 py-8">
           <p className="mb-3 font-mono text-xs uppercase tracking-[0.3em] text-primary/80">/ What We Do</p>
           <h2 className="font-sans text-2xl font-light tracking-tight text-foreground mb-8">
-            Capabilities built for
+            When Growth Needs
             <br />
-            <span className="text-foreground/35">digital-first growth</span>
+            <span className="text-foreground/35">More Than Luck</span>
           </h2>
           <div className="flex flex-col gap-3">
             {[
@@ -278,19 +278,18 @@ export const HeroSection = forwardRef<
               <div id="hs-about-text">
                 <p className="mb-6 font-mono text-xs uppercase tracking-[0.3em] text-primary/80">/ Our Story</p>
                 <h2 className="mb-8 font-sans text-4xl font-light leading-[1.05] tracking-tight text-foreground md:text-5xl lg:text-6xl">
-                  Innovation
+                  Turning setbacks
                   <br />
-                  at the core of
+                  into starting
                   <br />
-                  <span className="text-foreground/35">strategy</span>
+                  <span className="text-foreground/35">points.</span>
                 </h2>
                 <div className="mb-10 max-w-lg space-y-4">
                   <p className="text-base leading-relaxed text-foreground/65">
-                    SOL Advisers is a global consultancy focused on digital transformation and innovation.
+                    Every organization faces moments that test its direction, resilience, and ambition.
                   </p>
                   <p className="text-base leading-relaxed text-foreground/65">
-                    We partner with forward-thinking organizations to drive innovation, accelerate growth, and create
-                    lasting competitive advantages across 30+ countries.
+                    SOL was built to guide businesses through those moments, helping leaders transform uncertainty into strategy and challenges into measurable growth.
                   </p>
                 </div>
 
@@ -322,7 +321,7 @@ export const HeroSection = forwardRef<
                     </span>
                   </div>
                   <div className="border-l border-foreground/10 pl-6">
-                    <p className="font-sans text-base font-medium text-foreground">Global Consultancy of the Year</p>
+                    <p className="font-sans text-base font-medium text-foreground">Trusted Strategic Partner</p>
                     <p className="mt-1 font-mono text-[11px] text-foreground/40">Digital Innovation Awards 2024</p>
                   </div>
                 </div>
@@ -344,9 +343,9 @@ export const HeroSection = forwardRef<
           <div className="relative z-10 mx-auto w-full max-w-7xl px-6 md:px-12 lg:px-16">
             <div id="hs-featured-heading" className="mb-8 md:mb-14 flex items-end justify-between">
               <div>
-                <p className="mb-3 md:mb-4 font-mono text-xs uppercase tracking-[0.3em] text-primary/80">/ Selected Work</p>
+                <p className="mb-3 md:mb-4 font-mono text-xs uppercase tracking-[0.3em] text-primary/80">/ SOL Stories</p>
                 <h2 className="font-sans text-3xl md:text-5xl font-light tracking-tight text-foreground md:text-6xl">
-                  Work that speaks volumes
+                  From SOL To Success.
                 </h2>
               </div>
               <button
@@ -442,9 +441,9 @@ export const HeroSection = forwardRef<
             <div className="mb-16">
               <p className="mb-4 font-mono text-xs uppercase tracking-[0.3em] text-primary/80">/ How We Work</p>
               <h2 className="font-sans text-5xl font-light tracking-tight text-foreground md:text-6xl">
-                A proven process
+                From Stuck
                 <br />
-                <span className="text-foreground/35">for transformation</span>
+                <span className="text-foreground/35">to Strategic.</span>
               </h2>
             </div>
 
@@ -487,9 +486,9 @@ export const HeroSection = forwardRef<
           <div id="hs-cta-content" className="relative z-10 mx-auto w-full max-w-7xl text-center">
             <p className="mb-6 font-mono text-xs uppercase tracking-[0.3em] text-primary/80">/ Get Started</p>
             <h2 className="mb-6 font-sans text-5xl font-light tracking-tight text-foreground md:text-6xl lg:text-7xl">
-              Ready to transform
+              When Luck Runs Out,
               <br />
-              <span className="text-foreground/35">your organization?</span>
+              <span className="text-foreground/35">We Show Up.</span>
             </h2>
             <p className="mx-auto mb-12 max-w-xl text-base leading-relaxed text-foreground/55">
               Let&rsquo;s build your digital future together. Our team is ready to partner with you on your most

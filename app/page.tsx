@@ -79,12 +79,26 @@ export default function Home() {
     return () => clearTimeout(timer)
   }, [])
 
-  // After hydration, pre-mount section 1 on desktop for smooth first transition.
-  // Mobile remains at {0} to defer WorkSection JS loading.
+  // After hydration, pre-mount ALL sections on desktop via startTransition so
+  // every section's JS chunk is downloaded before the user can click the nav.
+  // Mobile stays at {0} to avoid heavy bundle downloads on cellular.
   useEffect(() => {
     if (window.innerWidth >= 768) {
-      setMountedSections(prev => new Set([...prev, 1]))
+      startTransition(() => setMountedSections(new Set([0, 1, 2, 3, 4])))
     }
+  }, [])
+
+  // After initial paint settles, warm up globe assets (GeoJSON fetch + JS module).
+  // Fires at 1s — fast enough for immediate About navigation, late enough to not
+  // compete with LCP. Fire-and-forget; errors intentionally swallowed.
+  useEffect(() => {
+    if (typeof window === "undefined" || window.innerWidth < 768) return
+    const timer = setTimeout(() => {
+      import("@/components/ui/wireframe-dotted-globe")
+        .then((m) => m.prefetchGlobeData?.())
+        .catch(() => {})
+    }, 1000)
+    return () => clearTimeout(timer)
   }, [])
 
   // On mobile, mount only the current section (no pre-loading adjacent sections)
@@ -272,6 +286,13 @@ export default function Home() {
     if (typeof window !== "undefined" && window.scrollY > 0) {
       window.scrollTo({ top: 0, behavior: index === 0 ? "smooth" : "auto" })
     }
+    // Pre-mount target ±1 synchronously so the section is never a blank
+    // placeholder when the CSS slide transition reaches it.
+    setMountedSections(prev => {
+      const next = new Set(prev)
+      for (let i = Math.max(0, index - 1); i <= Math.min(4, index + 1); i++) next.add(i)
+      return next
+    })
     isTransitioningRef.current = true
     overscrollRef.current = 0
     prepareScrollReset(currentSection, index, index < currentSection, true)

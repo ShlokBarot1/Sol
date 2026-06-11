@@ -416,6 +416,7 @@ export const ServicesSection = forwardRef<
         {/* Bottom CTA */}
         <div style={{ display: "flex", justifyContent: "center", padding: "64px 0 80px" }}>
           <button
+            onClick={() => scrollToSection?.(4)}
             onMouseOver={(e) => {
               e.currentTarget.style.background = "rgba(255,255,255,0.10)"
               e.currentTarget.style.transform = "scale(1.04)"

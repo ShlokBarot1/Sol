@@ -414,7 +414,7 @@ export const AboutSection = forwardRef<
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
         {/* ── Screen 1: normal scroll, no sticky ── */}
-        <div className="relative flex min-h-screen flex-col justify-between px-6 pb-12 pt-24 md:px-12 md:pt-28 lg:px-16">
+        <div className="relative flex min-h-screen flex-col justify-between px-5 pb-10 pt-20 md:px-12 md:pt-28 md:pb-12 lg:px-16">
 
           {/* Top row */}
           <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between">
@@ -426,7 +426,7 @@ export const AboutSection = forwardRef<
                 className="font-sans font-bold leading-[1.0] tracking-tight"
                 style={{ fontSize: "clamp(1.8rem, 3.6vw, 4.4rem)" }}
               >
-                {["Full-service AI", "& digital strategy", "built for impact."].map((line, i) => (
+                {["Luck is not", "a strategy.", "We are."].map((line, i) => (
                   <span
                     key={i}
                     className="block overflow-hidden py-[0.1em]"
@@ -440,8 +440,7 @@ export const AboutSection = forwardRef<
 
             <div className="flex flex-col gap-6 md:max-w-[36%] md:pt-[3vw]">
               <p className="abt-fade font-sans text-base leading-relaxed text-foreground/60 md:text-[1.05rem]">
-                SOL Advisers partners with forward-thinking organizations to drive innovation, accelerate growth,
-                and create lasting competitive advantages through AI and digital transformation.
+                Luck is a strategy only if you&rsquo;re willing to lose. SOL partners with organizations to turn uncertainty into direction, complexity into clarity, and ambition into measurable results.
               </p>
               <div className="abt-fade">
                 <MagneticButton variant="secondary" onClick={() => scrollToSection?.(4)}>
@@ -454,7 +453,7 @@ export const AboutSection = forwardRef<
           {/* Stat cards — bottom right */}
           <div className="flex justify-end">
             <div className="flex w-full flex-col gap-3 md:max-w-[42%]">
-              <div className="abt-stat-card rounded-2xl px-8 py-8" style={cardGlass}>
+              <div className="abt-stat-card rounded-2xl px-5 py-5 md:px-8 md:py-8" style={cardGlass}>
                 <div
                   className="font-sans font-bold leading-none tracking-tight text-foreground/80"
                   style={{ fontSize: "clamp(3.5rem, 7vw, 8rem)" }}
@@ -483,7 +482,7 @@ export const AboutSection = forwardRef<
                     Client Satisfaction
                   </div>
                   <div className="mt-1 font-mono text-[0.6rem] leading-snug text-foreground/30">
-                    Consistently exceeding expectations
+                    Never left to chance
                   </div>
                 </div>
 
@@ -510,7 +509,7 @@ export const AboutSection = forwardRef<
         <div className="min-h-screen px-6 py-20 md:px-12 md:py-28 lg:px-16">
           <div className="mb-14 md:mb-20">
             <p className="abt-fade mb-4 font-mono text-[0.68rem] uppercase tracking-[0.3em] text-foreground/40">
-              What drives us
+              Not luck. These.
             </p>
             <div className="overflow-hidden">
               <h2
@@ -563,7 +562,7 @@ export const AboutSection = forwardRef<
             </div>
             <div className="pt-1 border-l border-foreground/10 pl-5">
               <p className="font-sans text-sm leading-relaxed text-foreground/45">
-                Active partnerships spanning every major continent and market.
+                Built on trust and strategy — not chance — across every major market.
               </p>
             </div>
           </div>
@@ -585,6 +584,38 @@ export const AboutSection = forwardRef<
             ))}
           </div>
         </div>
+
+        {/* ── Our Vision ── */}
+        <div className="px-6 py-20 md:px-12 md:py-28 lg:px-16">
+          <div className="mx-auto w-full max-w-7xl">
+            <p className="abt-fade mb-5 font-mono text-[0.68rem] uppercase tracking-[0.3em] text-foreground/40">
+              Our Vision
+            </p>
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-16">
+              <div className="overflow-hidden">
+                <h2
+                  className="abt-line font-sans font-bold tracking-tight text-foreground"
+                  style={{ fontSize: "clamp(2.2rem, 4.5vw, 5.5rem)", lineHeight: 1.05 }}
+                >
+                  Luck fades.
+                  <br />
+                  Vision doesn&rsquo;t.
+                </h2>
+              </div>
+              <div className="flex flex-col gap-5">
+                <p className="abt-fade font-sans text-base leading-relaxed text-foreground/60">
+                  We envision a future where outcomes aren&rsquo;t left to chance. Our mission is to give every organization — regardless of size, sector, or starting point — the strategic clarity to move with confidence.
+                </p>
+                <p className="abt-fade font-sans text-base leading-relaxed text-foreground/45">
+                  We&rsquo;re not here to predict the future. We&rsquo;re here to make sure you&rsquo;re ready for it — no matter how it arrives.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="mx-6 border-t border-foreground/[0.08] md:mx-12 lg:mx-16" />
 
         {/* ── Globe zone: sticky, globe rises from below — desktop only ── */}
         <div className="about-globe-zone relative hidden md:block" style={{ height: "180vh" }}>
@@ -634,7 +665,7 @@ export const AboutSection = forwardRef<
                 </div>
                 <div className="pt-1 border-l border-foreground/[0.10] pl-6">
                   <p className="font-sans text-sm leading-relaxed text-foreground/45">
-                    Active partnerships spanning every major continent and market.
+                    Built on trust and strategy — not chance — across every major market.
                   </p>
                 </div>
               </div>
@@ -665,6 +696,59 @@ export const AboutSection = forwardRef<
           </div>
         </div>
 
+        {/* ── Leadership ── */}
+        <div className="px-6 py-20 md:px-12 md:py-28 lg:px-16">
+          <div className="mx-auto w-full max-w-7xl">
+            <p className="abt-fade mb-10 font-mono text-[0.68rem] uppercase tracking-[0.3em] text-foreground/40">
+              Leadership
+            </p>
+            <div
+              className="abt-fade rounded-2xl p-8 md:p-12"
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                backdropFilter: "blur(16px)",
+                WebkitBackdropFilter: "blur(16px)",
+                border: "1px solid rgba(255,255,255,0.07)",
+                boxShadow: "inset 0 1.5px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.20)",
+              }}
+            >
+              <div className="grid grid-cols-1 gap-12 md:grid-cols-2 md:gap-16">
+                {/* Left — avatar + bio */}
+                <div className="flex flex-col gap-6">
+                  {/* Avatar */}
+                  <div
+                    className="h-24 w-24 rounded-full shrink-0"
+                    style={{
+                      background: "radial-gradient(circle at 38% 35%, #5b8fff 0%, #2244cc 55%, #1a2fa8 100%)",
+                      boxShadow: "0 4px 24px rgba(63,100,255,0.35)",
+                    }}
+                  />
+                  <div>
+                    <h3 className="font-sans text-2xl font-bold text-foreground">Kash Patel</h3>
+                    <p className="mt-1 font-sans text-sm font-medium" style={{ color: "#5b8fff" }}>
+                      CEO &amp; Founder
+                    </p>
+                  </div>
+                  <p className="font-sans text-base leading-relaxed text-foreground/60">
+                    A visionary leader with over 15 years of experience in technology and digital transformation. Kash has pioneered numerous groundbreaking initiatives in AI, blockchain, and emerging technologies, establishing himself as a thought leader in digital innovation.
+                  </p>
+                </div>
+
+                {/* Right — company description */}
+                <div className="flex flex-col gap-6 md:justify-center">
+                  <h4 className="font-sans text-lg font-semibold text-foreground">SOL Advisers</h4>
+                  <p className="font-sans text-base leading-relaxed text-foreground/60">
+                    Under Kash&rsquo;s leadership, SOL Advisers has assembled an elite team of industry experts, each carefully selected to bring unique expertise and innovative perspectives to our clients&rsquo; challenges. This dynamic team structure allows us to adapt and respond to specific client needs with precision and excellence.
+                  </p>
+                  <p className="font-sans text-base leading-relaxed text-foreground/45">
+                    Our collaborative approach combines deep technical knowledge with strategic insight, ensuring each client receives a tailored solution that drives meaningful transformation and sustainable growth.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Divider */}
         <div className="mx-6 border-t border-foreground/[0.08] md:mx-12 lg:mx-16" />
 
@@ -674,13 +758,14 @@ export const AboutSection = forwardRef<
             Get in touch
           </p>
           <h2
-            className="max-w-4xl font-sans font-bold leading-[1.05] tracking-tight text-foreground"
-            style={{ fontSize: "clamp(2.5rem, 6vw, 7rem)" }}
+            className="mb-6 font-sans text-5xl font-light tracking-tight text-foreground md:text-6xl lg:text-7xl"
           >
-            Ready to get started?
+            When Luck Runs Out,
+            <br />
+            <span className="text-foreground/35">We Show Up.</span>
           </h2>
           <p className="max-w-xl font-sans text-base leading-relaxed text-foreground/55 md:text-lg">
-            Let's build something great together. Tell us about your project and we'll be in touch within 24 hours.
+            Let&rsquo;s build your digital future together. Our team is ready to partner with you on your most ambitious challenges.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <MagneticButton size="lg" variant="primary" onClick={() => scrollToSection?.(4)}>
