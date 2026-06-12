@@ -170,8 +170,8 @@ export function PortfolioGallery({
         className="relative max-w-7xl mx-auto overflow-hidden rounded-3xl"
         style={{
           background: "rgba(255,255,255,0.06)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
+          backdropFilter: "blur(8px)",
+          WebkitBackdropFilter: "blur(8px)",
           border: "1px solid rgba(255,255,255,0.13)",
           boxShadow:
             "inset 0 1.5px 0 0 rgba(255,255,255,0.32), inset 0 -1px 0 0 rgba(0,0,0,0.06), inset 1px 0 0 0 rgba(255,255,255,0.08), inset -1px 0 0 0 rgba(255,255,255,0.08), 0 40px 80px -20px rgba(0,0,0,0.55), 0 0 120px -40px rgba(60,0,255,0.12)",
@@ -233,8 +233,8 @@ export function PortfolioGallery({
                         className="relative aspect-[16/10] w-[320px] rounded-2xl overflow-hidden transition-all duration-300 group-hover:scale-[1.02]"
                         style={{
                           background: "rgba(255,255,255,0.09)",
-                          backdropFilter: "blur(16px)",
-                          WebkitBackdropFilter: "blur(16px)",
+                          backdropFilter: "blur(8px)",
+                          WebkitBackdropFilter: "blur(8px)",
                           border: "1px solid rgba(255,255,255,0.14)",
                           boxShadow: "inset 0 1.5px 0 0 rgba(255,255,255,0.38), inset 0 -1px 0 0 rgba(0,0,0,0.05), 0 8px 32px rgba(0,0,0,0.35)",
                         }}

@@ -427,8 +427,8 @@ export const ServicesSection = forwardRef<
             }}
             style={{
               background: "rgba(255,255,255,0.05)",
-              backdropFilter: "blur(16px)",
-              WebkitBackdropFilter: "blur(16px)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
               border: "1px solid rgba(255,255,255,0.13)",
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10)",
               color: "rgba(255,255,255,0.70)",

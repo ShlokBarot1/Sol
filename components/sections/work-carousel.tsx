@@ -103,8 +103,8 @@ const workItems = [
 
 const liquidGlass: React.CSSProperties = {
   background: "rgba(255,255,255,0.07)",
-  backdropFilter: "blur(20px)",
-  WebkitBackdropFilter: "blur(20px)",
+  backdropFilter: "blur(10px)",
+  WebkitBackdropFilter: "blur(10px)",
   border: "1px solid rgba(255,255,255,0.16)",
   boxShadow: [
     "inset 0 2px 0 0 rgba(255,255,255,0.32)",
@@ -118,8 +118,8 @@ const liquidGlass: React.CSSProperties = {
 
 const glassBadge: React.CSSProperties = {
   background: "rgba(255,255,255,0.10)",
-  backdropFilter: "blur(12px)",
-  WebkitBackdropFilter: "blur(12px)",
+  backdropFilter: "blur(6px)",
+  WebkitBackdropFilter: "blur(6px)",
   border: "1px solid rgba(255,255,255,0.18)",
   boxShadow: "inset 0 1px 0 0 rgba(255,255,255,0.22)",
   color: "rgba(255,255,255,0.75)",

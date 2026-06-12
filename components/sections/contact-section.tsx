@@ -210,8 +210,8 @@ export function ContactSection() {
             style={{
               position: "relative",
               background: "rgba(255,255,255,0.055)",
-              backdropFilter: "blur(24px)",
-              WebkitBackdropFilter: "blur(24px)",
+              backdropFilter: "blur(12px)",
+              WebkitBackdropFilter: "blur(12px)",
               border: "1px solid rgba(255,255,255,0.13)",
               borderRadius: "24px",
               boxShadow: [
@@ -383,8 +383,8 @@ export function ContactSection() {
                   letterSpacing: "-0.01em",
                   cursor: isSubmitting || submitted || !canSubmit ? "default" : "pointer",
                   transition: "all 0.22s",
-                  backdropFilter: "blur(12px)",
-                  WebkitBackdropFilter: "blur(12px)",
+                  backdropFilter: "blur(6px)",
+                  WebkitBackdropFilter: "blur(6px)",
                   boxShadow: submitted || !canSubmit
                     ? "none"
                     : "inset 0 1.5px 0 rgba(255,255,255,0.16), 0 4px 24px rgba(0,0,0,0.22)",

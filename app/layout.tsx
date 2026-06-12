@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
+import { PowerSaver } from "@/components/power-saver"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap", preload: true })
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap", preload: true })
@@ -20,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable} ${geistMono.variable}`}>
       <body className="font-sans antialiased">
+        <PowerSaver />
         {children}
       </body>
     </html>

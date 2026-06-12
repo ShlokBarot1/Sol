@@ -1,10 +1,7 @@
-[production]
+# Flat (non env-sectioned) query so Next/SWC + Turbopack reliably read it and
+# stop transpiling Baseline-supported features into legacy polyfills.
 last 2 Chrome versions
 last 2 Firefox versions
 last 2 Safari versions
 last 2 Edge versions
-
-[development]
-last 1 Chrome version
-last 1 Firefox version
-last 1 Safari version
+not dead

@@ -451,8 +451,8 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                   textTransform: "uppercase",
                   color: "rgba(255,255,255,0.55)",
                   background: "rgba(255,255,255,0.055)",
-                  backdropFilter: "blur(16px)",
-                  WebkitBackdropFilter: "blur(16px)",
+                  backdropFilter: "blur(8px)",
+                  WebkitBackdropFilter: "blur(8px)",
                   border: "1px solid rgba(255,255,255,0.13)",
                   borderRadius: 100,
                   padding: "14px 36px",
@@ -495,8 +495,8 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                 textTransform: "uppercase",
                 color: "rgba(255,255,255,0.70)",
                 background: "rgba(255,255,255,0.07)",
-                backdropFilter: "blur(16px)",
-                WebkitBackdropFilter: "blur(16px)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
                 border: "1px solid rgba(255,255,255,0.16)",
                 borderRadius: 100,
                 padding: "14px 40px",
@@ -530,7 +530,7 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
               className="absolute inset-0 z-[200]"
               style={{
                 background: isDesktop ? "rgba(0,0,0,0.65)" : "rgba(0,0,0,0.80)",
-                backdropFilter: isDesktop ? "blur(16px)" : "none",
+                backdropFilter: isDesktop ? "blur(8px)" : "none",
                 transition: "opacity 0.25s",
               }}
               onClick={() => { if (formStatus !== "submitting") { setShowSubmitModal(false); setFormStatus("idle"); } }}
@@ -542,8 +542,8 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                 height: "fit-content",
                 maxHeight: "85vh",
                 background: isDesktop ? "rgba(255,255,255,0.06)" : "rgba(10,10,20,0.96)",
-                backdropFilter: isDesktop ? "blur(16px)" : "none",
-                WebkitBackdropFilter: isDesktop ? "blur(16px)" : "none",
+                backdropFilter: isDesktop ? "blur(8px)" : "none",
+                WebkitBackdropFilter: isDesktop ? "blur(8px)" : "none",
                 border: "1px solid rgba(255,255,255,0.14)",
                 boxShadow: "inset 0 1.5px 0 rgba(255,255,255,0.28), 0 24px 64px rgba(0,0,0,0.45)",
                 borderRadius: 24,
@@ -701,8 +701,8 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
           const s = selectedStudy;
           const glass = {
             background: "rgba(255,255,255,0.06)",
-            backdropFilter: "blur(16px)",
-            WebkitBackdropFilter: "blur(16px)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
             border: "1px solid rgba(255,255,255,0.14)",
             boxShadow: [
               "inset 0 1.5px 0 rgba(255,255,255,0.22)",
@@ -724,7 +724,7 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.25 }}
                 className="absolute inset-0 z-[200]"
-                style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(16px)" }}
+                style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(8px)" }}
                 onClick={() => setSelectedStudy(null)}
                 onWheel={handleModalWheel}
               />
@@ -742,8 +742,8 @@ export const WorkSection = forwardRef((props: { isCurrent?: boolean; scrollToSec
                   height: "min(82vh, 720px)",
                   marginTop: "72px",
                   background: "rgba(8, 10, 24, 0.72)",
-                  backdropFilter: "blur(20px)",
-                  WebkitBackdropFilter: "blur(20px)",
+                  backdropFilter: "blur(10px)",
+                  WebkitBackdropFilter: "blur(10px)",
                   border: "1px solid rgba(255,255,255,0.16)",
                   boxShadow: [
                     "inset 0 2px 0 rgba(255,255,255,0.32)",

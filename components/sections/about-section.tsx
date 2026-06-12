@@ -400,8 +400,8 @@ export const AboutSection = forwardRef<
 
   const cardGlass = {
     background: "rgba(255,255,255,0.04)",
-    backdropFilter: "blur(16px)",
-    WebkitBackdropFilter: "blur(16px)",
+    backdropFilter: "blur(8px)",
+    WebkitBackdropFilter: "blur(8px)",
     border: "1px solid rgba(255,255,255,0.07)",
     boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
   } as React.CSSProperties
@@ -706,8 +706,8 @@ export const AboutSection = forwardRef<
               className="abt-fade rounded-2xl p-8 md:p-12"
               style={{
                 background: "rgba(255,255,255,0.04)",
-                backdropFilter: "blur(16px)",
-                WebkitBackdropFilter: "blur(16px)",
+                backdropFilter: "blur(8px)",
+                WebkitBackdropFilter: "blur(8px)",
                 border: "1px solid rgba(255,255,255,0.07)",
                 boxShadow: "inset 0 1.5px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.20)",
               }}

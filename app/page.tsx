@@ -79,13 +79,23 @@ export default function Home() {
     return () => clearTimeout(timer)
   }, [])
 
-  // After hydration, pre-mount ALL sections on desktop via startTransition so
-  // every section's JS chunk is downloaded before the user can click the nav.
+  // Pre-mount ALL sections on desktop so every section's JS chunk is ready
+  // before the user clicks the nav. Deferred to requestIdleCallback so the heavy
+  // section chunks (motion/swiper/d3-globe) execute in main-thread idle gaps
+  // AFTER hydration + LCP — keeping them out of the Total Blocking Time window.
   // Mobile stays at {0} to avoid heavy bundle downloads on cellular.
   useEffect(() => {
-    if (window.innerWidth >= 768) {
+    if (window.innerWidth < 768) return
+    const ric: (cb: () => void) => number =
+      (window as any).requestIdleCallback
+        ? (cb) => (window as any).requestIdleCallback(cb, { timeout: 4000 })
+        : (cb) => window.setTimeout(cb, 2500)
+    const cic: (id: number) => void =
+      (window as any).cancelIdleCallback || window.clearTimeout
+    const id = ric(() => {
       startTransition(() => setMountedSections(new Set([0, 1, 2, 3, 4])))
-    }
+    })
+    return () => cic(id)
   }, [])
 
   // After initial paint settles, warm up globe assets (GeoJSON fetch + JS module).
@@ -102,17 +112,21 @@ export default function Home() {
   }, [])
 
   // On mobile, mount only the current section (no pre-loading adjacent sections)
-  // On desktop, eagerly mount ±1 for instant transitions
+  // On desktop, eagerly mount ±1 for instant transitions — but skip neighbor
+  // pre-mount on the very first run (initial load) so section 1's chunk stays out
+  // of the TBT window. The idle callback above handles bulk pre-mount instead.
+  const didNavigateRef = useRef(false)
   useEffect(() => {
     startTransition(() => setMountedSections(prev => {
       const next = new Set(prev)
-      if (window.innerWidth < 768) {
+      if (window.innerWidth < 768 || !didNavigateRef.current) {
         next.add(currentSection)
       } else {
         for (let i = Math.max(0, currentSection - 1); i <= Math.min(4, currentSection + 1); i++) next.add(i)
       }
       return next
     }))
+    didNavigateRef.current = true
   }, [currentSection])
 
   // Load real shader on first genuine interaction OR after 5s fallback.
@@ -591,7 +605,7 @@ export default function Home() {
           <span className="font-sans text-xl font-semibold tracking-tight text-foreground">SOL</span>
         </button>
 
-        <div className="hidden items-center gap-8 md:flex px-8 py-2.5 rounded-full" style={{ background: "rgba(255,255,255,0.06)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.13)", boxShadow: "inset 0 1.5px 0 0 rgba(255,255,255,0.28), inset 0 -1px 0 0 rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.18)" }}>
+        <div className="hidden items-center gap-8 md:flex px-8 py-2.5 rounded-full" style={{ background: "rgba(255,255,255,0.06)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.13)", boxShadow: "inset 0 1.5px 0 0 rgba(255,255,255,0.28), inset 0 -1px 0 0 rgba(0,0,0,0.05), 0 4px 16px rgba(0,0,0,0.18)" }}>
           {["Home", "Case Studies", "Services", "About", "Contact"].map((item, index) => (
             <button
               key={item}

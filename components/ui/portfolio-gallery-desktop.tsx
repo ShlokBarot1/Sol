@@ -60,8 +60,8 @@ export function PortfolioGalleryDesktop({
                 }}
                 style={{
                   background: "rgba(255,255,255,0.10)",
-                  backdropFilter: "blur(16px)",
-                  WebkitBackdropFilter: "blur(16px)",
+                  backdropFilter: "blur(8px)",
+                  WebkitBackdropFilter: "blur(8px)",
                   border: "1px solid rgba(255,255,255,0.15)",
                   boxShadow:
                     "inset 0 1.5px 0 0 rgba(255,255,255,0.42), inset 0 -1px 0 0 rgba(0,0,0,0.06), inset 1px 0 0 0 rgba(255,255,255,0.10), inset -1px 0 0 0 rgba(255,255,255,0.10), 0 20px 60px rgba(0,0,0,0.40), 0 4px 12px rgba(0,0,0,0.20)",

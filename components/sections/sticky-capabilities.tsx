@@ -16,8 +16,8 @@ const SERVICES = [
 
 const glassCard: React.CSSProperties = {
   background: "rgba(10,10,20,0.42)",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
+  backdropFilter: "blur(8px)",
+  WebkitBackdropFilter: "blur(8px)",
   border: "1px solid rgba(255,255,255,0.20)",
   boxShadow: [
     "inset 0 1.5px 0 0 rgba(255,255,255,0.50)",

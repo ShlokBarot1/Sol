@@ -15,11 +15,21 @@ export function CustomCursor() {
     if (!outer || !inner) return
 
     let cleanup = () => {}
+    let started = false
 
-    import("gsap").then(({ default: gsap }) => {
-      if (!outerRef.current || !innerRef.current) return
+    // Defer the GSAP load until the user actually moves the mouse. The cursor is
+    // useless before the first move anyway, and this keeps GSAP's parse/eval out
+    // of the initial load (and out of the Lighthouse TBT window, which never
+    // moves the pointer). The first real position is replayed once GSAP is ready.
+    const onFirstMove = (firstEvent: MouseEvent) => {
+      if (started) return
+      started = true
+      window.removeEventListener("mousemove", onFirstMove)
 
-      gsap.set([outer, inner], { xPercent: -50, yPercent: -50, x: -200, y: -200 })
+      import("gsap").then(({ default: gsap }) => {
+        if (!outerRef.current || !innerRef.current) return
+
+        gsap.set([outer, inner], { xPercent: -50, yPercent: -50, x: firstEvent.clientX, y: firstEvent.clientY })
 
       const xTo = gsap.quickTo(outer, "x", { duration: 0.55, ease: "power3.out" })
       const yTo = gsap.quickTo(outer, "y", { duration: 0.55, ease: "power3.out" })
@@ -49,9 +59,14 @@ export function CustomCursor() {
         }
       }
 
+      handleMouseMove(firstEvent)
       window.addEventListener("mousemove", handleMouseMove, { passive: true })
       cleanup = () => window.removeEventListener("mousemove", handleMouseMove)
-    })
+      })
+    }
+
+    window.addEventListener("mousemove", onFirstMove, { passive: true })
+    cleanup = () => window.removeEventListener("mousemove", onFirstMove)
 
     return () => cleanup()
   }, [])

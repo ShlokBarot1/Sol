@@ -165,3 +165,21 @@
     transform: translateZ(0);
   }
 }
+
+/* ── Power-save mode (battery ≤25% unplugged) — blur only, keep animations ── */
+.power-save *,
+.power-save *::before,
+.power-save *::after {
+  backdrop-filter: blur(2px) !important;
+  -webkit-backdrop-filter: blur(2px) !important;
+}
+
+/* ── prefers-reduced-motion — explicit OS opt-in only ── */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 150ms !important;
+    scroll-behavior: auto !important;
+  }
+}

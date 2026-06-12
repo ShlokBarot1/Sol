@@ -11,6 +11,9 @@ const nextConfig = {
   },
   experimental: {
     optimizePackageImports: ['lucide-react', 'gsap', 'd3', 'swiper', 'motion', '@supabase/supabase-js', 'shaders'],
+    // Inline critical CSS into the HTML <head> so the stylesheet request no longer
+    // blocks initial render (removes the render-blocking ~10 KiB CSS chunk).
+    inlineCss: true,
   },
 }
 

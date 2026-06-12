@@ -77,6 +77,7 @@ export const HeroSection = forwardRef<
   ]
 
   const [showSpline, setShowSpline] = useState(false)
+  const [splineVisible, setSplineVisible] = useState(true)
   const [isDesktop, setIsDesktop] = useState(false)
 
   useEffect(() => {
@@ -84,15 +85,26 @@ export const HeroSection = forwardRef<
   }, [])
 
   useEffect(() => {
-    // Spline iframe is desktop-only (hidden md:block) — skip timer on mobile
     if (window.innerWidth < 768) return
     const timer = setTimeout(() => setShowSpline(true), 2000)
     return () => clearTimeout(timer)
   }, [])
 
+  // Pause Spline WebGL when hero is scrolled out of view
+  useEffect(() => {
+    const el = cubeWrapperRef.current
+    if (!el) return
+    const obs = new IntersectionObserver(
+      ([entry]) => setSplineVisible(entry.isIntersecting),
+      { threshold: 0 }
+    )
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+
   const glassCard = {
     background: isDesktop ? "rgba(255,255,255,0.06)" : "rgba(18,18,30,0.90)",
-    ...(isDesktop ? { backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)" } : {}),
+    ...(isDesktop ? { backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" } : {}),
     border: "1px solid rgba(255,255,255,0.13)",
     boxShadow:
       "inset 0 1.5px 0 0 rgba(255,255,255,0.30), inset 0 -1px 0 0 rgba(0,0,0,0.05), inset 1px 0 0 0 rgba(255,255,255,0.07), inset -1px 0 0 0 rgba(255,255,255,0.07), 0 8px 32px rgba(0,0,0,0.24), 0 2px 8px rgba(0,0,0,0.10)",
@@ -100,7 +112,7 @@ export const HeroSection = forwardRef<
 
   const glassIconStyle = {
     background: isDesktop ? "rgba(63,0,255,0.10)" : "rgba(63,0,255,0.18)",
-    ...(isDesktop ? { backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)" } : {}),
+    ...(isDesktop ? { backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" } : {}),
     border: "1px solid rgba(255,255,255,0.16)",
     boxShadow: "inset 0 1px 0 0 rgba(255,255,255,0.24)",
   } as React.CSSProperties
@@ -139,7 +151,7 @@ export const HeroSection = forwardRef<
           <div
             ref={cubeWrapperRef}
             className="absolute z-10 hidden md:block"
-            style={{ left: "58%", top: "30%", right: 0, bottom: 0, overflow: "hidden", touchAction: "none" }}
+            style={{ left: "58%", top: "30%", right: 0, bottom: 0, overflow: "hidden", touchAction: "none", display: splineVisible ? undefined : "none" }}
           >
             {showSpline && (
               <iframe
